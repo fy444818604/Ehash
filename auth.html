@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>EHash</title>
+		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="./css/common.css" />
+		<style type="text/css">
+			.login-box{
+				width: 560px;
+				height: 600px;
+				padding: 64px 113px 55px 113px;
+				background-color: #FFFFFF;
+				border-radius: 4px;
+				box-shadow: 0px 2px 10px 0px rgba(0,0,0,0.08); 
+			}
+			.auth-box{
+				display: flex;
+				justify-content: center;
+				padding: 48px 0;
+			}
+			.auth-title{
+				margin-bottom: 40px;
+				font-size: 32px;
+				color: #222222;
+				text-align: center;
+			}
+			.login-input-row{
+				width: 100%;
+				margin-bottom: 24px;
+			}
+			.get-password{
+				margin-top: 8px;
+				margin-bottom: 49px;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript" src="./js/header.js"></script>
+		<div class="main-body">
+			<div class="auth-box layui-form">
+				<div class="login-box">
+					<div class="auth-title">欢迎登陆</div>
+					<div class="login-input-row">
+						 <input type="text" name="title" required  lay-verify="required" placeholder="手机号/邮箱" autocomplete="off" class="layui-input">
+					</div>
+					<div class="login-input-row">
+						 <input type="text" name="title" required  lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+					</div>
+					<div class="login-input-row">
+						<button type="button" class="layui-btn layui-btn-fluid">登陆</button>
+					</div>
+					<div class="flex-between get-password">
+						<div>
+							<input type="checkbox" name="" title="记住密码" lay-skin="primary" checked>
+						</div>
+						<div class="c582 cursor">忘记密码</div>
+					</div>
+					<div class="flex-center">
+						<div class="c999">还没有账号?</div>
+						<div class="c582 cursor">立即注册</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="./js/footer.js"></script>
+	</body>
+	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script type="text/javascript">
+		let vm = new Vue({
+			el:'.login-box',
+			mounted() {
+				layui.use(['layer', 'form'], function(){
+				  var layer = layui.layer
+				  ,form = layui.form;
+				  
+				});
+			}
+		})
+	</script>
+</html>
