@@ -70,6 +70,9 @@
 	<script type="text/javascript">
 		let vm = new Vue({
 			el:'.login-box',
+			data:{
+				type:1,
+			},
 			mounted() {
 				layui.use(['layer', 'form'], function(){
 				  var layer = layui.layer
