@@ -4,7 +4,7 @@
 	box-sizing: border-box;
 	word-wrap: break-word;
 	font-family: "Microsoft Yahei";
-	color: #333;
+	color: #606266;
 }
 
 body {
@@ -536,6 +536,11 @@ body {
 
 .main-body {
 	min-height: calc(100vh - 490px);
+	background-color: #F3F3F9;
+}
+
+.main-body1{
+	min-height: calc(100vh - 112px);
 	background-color: #F3F3F9;
 }
 
