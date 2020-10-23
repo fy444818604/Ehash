@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Ehash</title>
+		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="./css/common.css" />
+		<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1465230_x1cs9lb9rh.css"/>
+	</head>
+	<body>
+		<script type="text/javascript" src="./js/header.js"></script>
+		<div class="main-body1">
+			<div style="height:30px"></div>
+			<div class="other-container"> 
+				<div class="flex-between">
+					<div class="page-title">充值中心</div>
+				</div>
+				<div class="module-title module-title1">
+					<div class="layui-inline">
+						<label class="layui-form-label">用户名:</label>
+						<div class="layui-input-inline" style="width: 200px;">
+							<input type="text" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-inline">
+						<label class="layui-form-label">金额:</label>
+						<div class="layui-input-inline" style="width: 120px;">
+							<input type="text" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-inline" style="margin-left: 20px;">
+						<button type="button" class="layui-btn bg582">增加</button>
+					</div>
+				</div>
+				<div class="table-cont" style="margin-top: 24px;">
+					<table class="layui-table" lay-skin="line" lay-size="lg">
+						 <thead>
+								<tr>
+									<th>费用编号</th>
+									<th>关联订单</th>
+									<th>项目</th>
+									<th>时间</th>
+									<th>金额</th>
+									<th>订单余额</th>
+								</tr> 
+							</thead>
+							<tbody>
+								<tr v-for="item in order">
+									<td>{{item.id}}</td>
+									<td>{{item.type}}</td>
+									<td>{{item.status}}</td>
+									<td>{{item.pay}}</td>
+									<td>{{item.num}}</td>
+									<td>{{item.money}}</td>
+								</tr>
+							</tbody>
+					</table>
+					<div id="page"></div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script type="text/javascript">
+		var VM = new Vue({
+			el:'.main-body1',
+			data:{
+				orderDetail:{
+					"客户邮箱": "344345@sina.com",
+					"客户电话": "13585215754",
+					"产品名": "易哈希",
+					"数量": "100台",
+					"下单时间": "2020-09-30 15:00",
+					"订单状态": "上架中",
+					"服务截止": "2022-10-10 15:00",
+					"电费剩余": "509.2"
+				},
+				order:[
+					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
+					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
+					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
+					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
+				]
+			},
+			
+			mounted() {
+				layui.use('laypage', function(){
+				  var laypage = layui.laypage;
+				  
+				  laypage.render({
+				    elem: 'page' 
+				    ,count: 50 
+						,layout:['prev', 'page', 'next', 'limits', 'skip']
+						,jump: function(obj, first){
+						    //obj包含了当前分页的所有参数，比如：
+						    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+						    console.log(obj.limit); //得到每页显示的条数
+						    
+						    //首次不执行
+						    if(!first){
+						      //do something
+						    }
+						  }
+				  });
+				});
+			}
+		})
+	</script>
+</html>

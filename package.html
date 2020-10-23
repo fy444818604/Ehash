@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Ehash</title>
+		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="./css/common.css" />
+		<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1465230_x1cs9lb9rh.css"/>
+	</head>
+	<body>
+		<script type="text/javascript" src="./js/header.js"></script>
+		<div class="main-body1">
+			<div style="height:30px"></div>
+			<div class="other-container"> 
+				<div class="flex-between">
+					<div class="page-title">选择套餐</div>
+				</div>
+				<ul class="pack-list">
+					<li v-for="item in pack">
+						<div class="pack-top">
+							<span class="pack-price">{{item.price}}</span>
+							<span class="pack-unit">元</span>
+						</div>
+						<div class="pack-name">{{item.name}}</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script type="text/javascript">
+		var VM = new Vue({
+			el:'.main-body1',
+			data:{
+				pack:[
+					{name:'易哈希 SERVER-II',price:'999',active:false},
+					{name:'易哈希 SERVER-II',price:'999',active:false},
+					{name:'易哈希 SERVER-II',price:'999',active:false},
+				]
+			},
+			
+			mounted() {
+			}
+		})
+	</script>
+</html>

@@ -539,7 +539,7 @@ body {
 	background-color: #F3F3F9;
 }
 
-.main-body1{
+.main-body1 {
 	min-height: calc(100vh - 112px);
 	background-color: #F3F3F9;
 }
@@ -554,20 +554,302 @@ body {
 	background-color: #323749;
 }
 
-.c333{
+.c333 {
 	color: #333333;
 }
-.c666{
+
+.c666 {
 	color: #666666;
 }
-.c999{
+
+.c999 {
 	color: #999999;
 }
 
-.c582{
+.c582 {
 	color: #5c82ff;
 }
 
-.cursor{
+.cursor {
 	cursor: pointer;
 }
+
+/* persion */
+.person-photo {
+	height: 80px;
+	width: 80px;
+	border-radius: 100%;
+}
+
+.user-name {
+	color: #606266;
+	font-size: 16px;
+}
+
+.main-container {
+	width: 1200px;
+	margin: 0 auto;
+	padding-top: 30px;
+	display: flex;
+}
+
+.person-nav {
+	width: 224px;
+	height: 536px;
+	margin-right: 24px;
+	background: #ffffff;
+	border-radius: 4px;
+	box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
+}
+
+.normal-right {
+	width: 952px;
+}
+
+.user-info {
+	height: 183px;
+	/* margin-bottom: 20px; */
+	/* padding: 0 24px; */
+	margin: 0 24px 20px 24px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.user-name {
+	margin-top: 10px;
+	font-size: 16px;
+}
+
+.nav-list>li {
+	height: 48px;
+	width: 100%;
+}
+
+.nav-list>li>a {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	height: 100%;
+}
+
+.nav-list>li {
+	padding: 0 20px;
+}
+
+.nav-list>li>a>i {
+	margin-right: 8px;
+}
+
+.nav-list>li.active {
+	border-left: 4px solid #5C82FF;
+	background-color: #F0F3FD;
+	box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
+}
+
+.nav-list>li.active {
+	padding-left: 16px;
+}
+
+.page-title {
+	color: #303133;
+	font-weight: 700;
+	font-size: 20px;
+}
+
+.person-top {
+	display: flex;
+	margin-top: 33px;
+	justify-content: space-between;
+}
+
+.person-top>li {
+	height: 136px;
+	width: 204px;
+	padding: 32px 27px;
+	border-radius: 6px;
+}
+
+.person-top>li>img {
+	width: 26px;
+	height: 26px;
+}
+
+.normal-right {
+	padding: 27px 32px;
+	background: #ffffff;
+	border-radius: 4px;
+	box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
+}
+
+.person-top-name {
+	display: flex;
+	align-items: flex-end;
+	margin-top: 20px;
+}
+
+.person-top-name>div:nth-child(1) {
+	color: #606266;
+	font-size: 28px;
+	margin-right: 5px;
+}
+
+.main-item {
+	margin-top: 52px;
+}
+
+.main-item-title {
+	color: #000000;
+	font-size: 16px;
+}
+
+.main-item-more {
+	color: #909399;
+}
+
+.main-item-top {
+	margin-bottom: 30px;
+}
+
+#page{
+	text-align: right;
+}
+
+.page-title-btn{
+	border: 1px solid #606266;
+	border-radius: 4px;
+	background: transparent;
+	color: #606266;
+	outline: none;
+	padding: 8px 25px;
+}
+
+.module-title{
+	height: 48px;
+	line-height: 48px;
+	background: #eff3fa;
+	border-radius: 4px;
+	width: 100%;
+	padding: 0 16px;
+	margin-top: 28px;
+}
+
+.order-detail{
+	padding-left: 16px;
+}
+
+.order-detail>li{
+	display: flex;
+	margin-top: 15px;
+}
+
+.order-detail>li>div:nth-child(1){
+	display: inline-block;
+	width: 60px;
+	text-align: justify;
+	vertical-align: top;
+	text-align-last: justify;
+}
+
+.order-msg{
+	margin-left: 10px;
+}
+
+.electricity{
+	color: #5c82ff;
+	cursor: pointer;
+	margin-left: 10px;
+}
+
+.other-container{
+	width: 1200px;
+	margin: 0 auto;
+	padding: 32px 28px;
+	background-color: #FFFFFF;
+}
+.detail-add{
+	cursor: pointer;
+}
+
+.detail-add *{
+	color: #5C82FF;
+}
+
+.op>li{
+	margin-right: 20px;
+	color: #5C82FF;
+}
+
+.module-title1{
+	height: 104px;
+	display: flex;
+	align-items: center;
+}
+
+.module-title1>.layui-inline{
+	display: flex;
+	align-items: center;
+}
+
+.bg582{
+	background-color: #5c82ff!important;
+}
+
+.pack-list{
+	display: flex;
+	justify-content: space-between;
+	margin-top: 24px;
+}
+
+.pack-list>li{
+	padding: 0 57px;
+	width: 330px;
+	height: 144px;
+	border: 1px solid rgba(0,0,0,0.15);
+	border-radius: 4px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.pack-top{
+	width: 100%;
+	text-align: center;
+	padding: 10px 0;
+	border-bottom: 1px dotted rgba(0,0,0,0.15);
+}
+
+.pack-price{
+	color: #333333;
+	font-size: 36px;
+}
+.pack-unit{
+	color: #999999;
+	font-size: 16px;
+}
+
+.pack-name{
+	padding: 18px 0;
+	color: #666666;
+}
+
+/* layui */
+.layui-btn{
+	border-radius: 4px;
+}
+
+.layui-table{
+	border: none!important;
+}
+
+.layui-table thead tr{
+	background-color: #f5f7fa;
+}
+
+.layui-laypage .layui-laypage-curr .layui-laypage-em{
+	background-color: #5c82ff
+}
+

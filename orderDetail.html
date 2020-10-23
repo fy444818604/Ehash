@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>订单详情</title>
+		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="./css/common.css" />
+		<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1465230_x1cs9lb9rh.css"/>
+	</head>
+	<body>
+		<script type="text/javascript" src="./js/header.js"></script>
+		<div class="main-body1">
+			<div class="main-container">
+				<script type="text/javascript" src="./js/nav.js"></script>
+				<div class="normal-right">
+					<div class="flex-between">
+						<div class="page-title">订单详情</div>
+						<a class="page-title-btn" href="#">提交工单</a>
+					</div>
+					<div class="module-title">订单号：251528785125</div>
+					<ul class="order-detail">
+						<li v-for="(item,key) in orderDetail">
+							<div>{{key}}</div>
+							<div>:</div>
+							<div class="order-msg">
+								<span>{{item}}</span>
+								<span v-if="key == '电费剩余'" class="electricity">充值电费</span>
+							</div>
+						</li>
+					</ul>
+					<div class="module-title">费用记录</div>
+					<div class="table-cont" style="margin-top: 24px;">
+						<table class="layui-table" lay-even lay-skin="nob">
+							 <thead>
+									<tr>
+										<th>费用编号</th>
+										<th>项目</th>
+										<th>变动时间</th>
+										<th>金额</th>
+										<th>订单余额</th>
+									</tr> 
+								</thead>
+								<tbody>
+									<tr v-for="item in order">
+										<td>{{item.id}}</td>
+										<td>{{item.type}}</td>
+										<td>{{item.status}}</td>
+										<td>{{item.pay}}</td>
+										<td>{{item.num}}</td>
+									</tr>
+								</tbody>
+						</table>
+						<div id="page"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script type="text/javascript">
+		var VM = new Vue({
+			el:'.main-body1',
+			data:{
+				nav:[
+					{icon:'iconfujian',name:'个人中心',link:'person.html',active:false},
+					{icon:'iconfujian',name:'我的订单',link:'order.html',active:false},
+					{icon:'iconfujian',name:'费用记录',link:'cost.html',active:false},
+					{icon:'iconfujian',name:'工单列表',link:'repair.html',active:false},
+				],
+				orderDetail:{
+					"产品名": "易哈希",
+					"数量": "100台",
+					"下单时间": "2020-09-30 15:00",
+					"订单状态": "上架中",
+					"服务截止": "2022-10-10 15:00",
+					"电费剩余": "509.2"
+				},
+				order:[
+					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
+					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
+					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
+					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
+				]
+			},
+			
+			mounted() {
+				layui.use('laypage', function(){
+				  var laypage = layui.laypage;
+				  
+				  laypage.render({
+				    elem: 'page' 
+				    ,count: 50 
+						,layout:['prev', 'page', 'next', 'limits', 'skip']
+						,jump: function(obj, first){
+						    //obj包含了当前分页的所有参数，比如：
+						    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+						    console.log(obj.limit); //得到每页显示的条数
+						    
+						    //首次不执行
+						    if(!first){
+						      //do something
+						    }
+						  }
+				  });
+				});
+			}
+		})
+	</script>
+</html>
