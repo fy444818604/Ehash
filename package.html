@@ -6,6 +6,11 @@
 		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
 		<link rel="stylesheet" type="text/css" href="./css/common.css" />
 		<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1465230_x1cs9lb9rh.css"/>
+		<style type="text/css">
+			.other-container{
+				padding: 32px 72px;
+			}
+		</style>
 	</head>
 	<body>
 		<script type="text/javascript" src="./js/header.js"></script>
@@ -13,18 +18,88 @@
 			<div style="height:30px"></div>
 			<div class="other-container"> 
 				<div class="flex-between">
-					<div class="page-title">选择套餐</div>
+					<div class="page-title fs16">选择套餐</div>
 				</div>
 				<ul class="pack-list">
-					<li v-for="item in pack">
+					<li v-for="item in pack" class="cursor" :class="item.active?'active':''">
 						<div class="pack-top">
-							<span class="pack-price">{{item.price}}</span>
+							<span class="pack-price" :class="item.active?'c582':''">{{item.price}}</span>
 							<span class="pack-unit">元</span>
 						</div>
 						<div class="pack-name">{{item.name}}</div>
+						<img src="./img/gou.png" class="pack-check" v-show="item.active">
 					</li>
 				</ul>
+				<div class="pack-detail">
+					<div class="flex-between">
+						<div class="pack-detail-item">
+							<div>机型：</div>
+							<div>蚂蚁矿机</div>
+						</div>
+						<div class="pack-detail-item">
+							<div>算力：</div>
+							<div>100TH/S</div>
+						</div>
+						<div class="pack-detail-item">
+							<div>服务周期：</div>
+							<div>365天(2020.07.27-2021.07.22)</div>
+						</div>
+					</div>
+					<div class="pack-detail-item">
+						<div>单价：</div>
+						<div>99.00</div>
+					</div>
+					<div class="pack-detail-item">
+						<div>数量：</div>
+						<div>100台</div>
+					</div>
+					<div class="pack-detail-item">
+						<div>说明：</div>
+						<div>付款3天内上架，该价格包含矿机产权和服务费</div>
+					</div>
+				</div>
+				<div class="pack-price-all">
+					<div class="flex">
+						<div class="c666">产品费用：</div>
+						<div class="c582">1999.00</div>
+					</div>
+				</div>
+				<div class="flex-between">
+					<div class="page-title fs16">预付电费</div>
+				</div>
+				<div class="flex pack-time-wrap">
+					<div>预交电费：</div>
+					<ul class="pack-time">
+						<li v-for="item in time" class="cursor" :class="item.active?'active c582':''">
+							{{item.num}}天
+							<img src="./img/gou.png" style="width: 24px;height: 24px;" class="pack-check" v-show="item.active">
+						</li>
+					</ul>
+				</div>
+				<div class="pack-time-detail">
+					<div class="c666">0.0474/T/天 × 1000T ×60天</div>
+					<div class="c999">电费计算公式：功率x24hx天数，当套餐电费剩余天数小于3小时，将自动停机。 </div>
+					<div class="c999">电费最少需先预付30天</div>
+				</div>
+				<div class="pack-price-all">
+					<div class="flex">
+						<div class="c666">电费：</div>
+						<div class="c582">1999.00</div>
+					</div>
+				</div>
+				<div class="computed">
+					<ul>
+						<li v-for="(item,key) in price">
+							<div class="c666">{{key}}:</div>
+							<div class="c582">{{item}}</div>
+						</li>
+					</ul>
+				</div>
+				<div class="flex-center">
+					<button type="button" class="layui-btn bg582 order-add">提交订单</button>
+				</div>
 			</div>
+			<div style="height: 72px;"></div>
 		</div>
 	</body>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
@@ -34,10 +109,21 @@
 			el:'.main-body1',
 			data:{
 				pack:[
+					{name:'易哈希 SERVER-II',price:'999',active:true},
 					{name:'易哈希 SERVER-II',price:'999',active:false},
 					{name:'易哈希 SERVER-II',price:'999',active:false},
-					{name:'易哈希 SERVER-II',price:'999',active:false},
-				]
+				],
+				time:[
+					{num:30,active:true},
+					{num:60,active:false},
+					{num:90,active:false},
+				],
+				price:{
+					'矿机及服务费':'1999.00',
+					'预付电费':'666.00',
+					'折扣':'-253.00',
+					'应付总额':'2699.00'
+				}
 			},
 			
 			mounted() {
