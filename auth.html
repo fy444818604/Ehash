@@ -30,6 +30,7 @@
 
 			.login-input-row {
 				width: 100%;
+				height: 48px;
 				margin-bottom: 24px;
 			}
 
@@ -37,22 +38,93 @@
 				margin-top: 8px;
 				margin-bottom: 49px;
 			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box
+			}
+
+			.verify-wrap {
+				width: 350px;
+				height: 40px;
+				background-color: #e5e5e5;
+				border: 1px solid #e0e0e0;
+				margin: 5px auto;
+				position: relative
+			}
+
+			.verify-wrap .drag-btn {
+				position: absolute;
+				left: -1px;
+				top: -1px;
+				width: 50px;
+				height: 40px;
+				background: #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAiCAYAAAApkEs2AAAA/UlEQVRYhe3XLc9GYBjG8eN6dkdFIQuqoCiCbj6ob2CCIplRaJKqEHT3c/kAz66Xc/fLnvO3UY7N/jNmxDAMF77AQ57iOH53x5/GccTPuyNUcSg1DqXGodQ4lNr/CC3LEsuyaG8mrEKzLEPXdZjnWWszYRXq+z7yPMc0Tej7XnkzYf2Muq6LoiiwrivatsV1XUrby0Mlx3Huu7fvO5qmUd50kL31QgijTdXD+gq/zvNEVVXwPA9pmipvOqxDj+O4Q4IgQJIkypsuq9Bt21DXNaIoug/VzYRVqHw55J0Kw1BrMyHkXyj/3BHiUGocSo1DqXEota8Jvb/18hP16Z7qL3h/w53n4AAAAABJRU5ErkJggg==) no-repeat center center;
+				background-size: 100% 100%;
+				z-index: 2;
+				cursor: move;
+			}
+
+			.verify-wrap .suc-drag-btn {
+				background: #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACoAAAAiCAYAAAApkEs2AAACA0lEQVRYhe2Y2yuDYRzHv7PJYc5zKspYSRMymStXu5NCs5W4csEfwJ+gSA53csg1F4R/gSu0OcWSmNIQkfMcEvu9tdpY79793leo91Nbbft993x6nj2/52kal8v1gX+Ajp4sFstve4jidrsR99sSUlFFlUYVVRpVVGl0SnyJ934VaxczOLpdwd3bufBeWnw+StLrYc1tQ3FqnewxZIk+vz9g7rAHO9dL3z67efXBfTkrPCqymtBqGkaiNoU9FnvpSXJyzx5R8itUQ7WU4cIWnT/qhe9xS3I91VKGC0uUfpPbV4uSajUhQ1CGshxYorRxpGDObECf1Ysm40DM2a+wNhPt7mhUZzvhMI1Aq9HBkFgUUzYSrBkNtiDCkGBES/Eg8pLKwiSdplFB8uRhEzMH3RGzsSC7j9oKe1CT4wi0oEZMeRzITy4XJOM0WkFy2uOE//1O7jA8UWrm1CeJ5dMxlGXYoI/PQrd5AQlavagkZTmwlt4UOHGCnPs9wkw+vl0jSZcWdSZDsz8uas1tD3t99rSL8b0W3Lz4cHy/LrrctYEjlQNr6Y2ptag0NIf10gv/Pvo3akRzlOGe++yTyV4yhAJ9leR6qqUMF7YoXTC6zPPChSMaVEO1ci4lstoTDdxROhE4Fjv/9jUvCIkoISPGv7nhq6JKo4oqjSqqNEIfpf8f/zqf+36643RPeo8AAAAASUVORK5CYII=) no-repeat center center;
+				background-size: 100% 100%
+			}
+
+			.verify-wrap .drag-progress {
+				position: absolute;
+				left: 0;
+				top: -1px;
+				height: 40px;
+				border-top: 1px solid #7ac23c;
+				border-top: 1px solid #7ac23c;
+				width: 0;
+				background-color: #7ac23c;
+				color: #fff;
+				font-size: 18px;
+				text-align: center;
+				line-height: 40px
+			}
+
+			.verify-wrap .fix-tips,
+			.verify-msg {
+				width: 100%;
+				position: absolute;
+				right: 0;
+				left: 1px;
+				height: 100%;
+				color: #51555c;
+				z-index: 1;
+				line-height: 38px;
+				font-size: 12px;
+				text-align: center
+			}
+
+			.verify-wrap .verify-msg {
+				background-color: #7ac23c;
+				color: #fff;
+				display: none
+			}
+			
 		</style>
 	</head>
 	<body>
 		<script type="text/javascript" src="./js/header.js"></script>
 		<div class="main-body">
-			<div class="auth-box layui-form">
+			<div class="auth-box layui-form" v-cloak>
 				<div class="login-box" v-show="type == 1">
 					<div class="auth-title">欢迎登陆</div>
 					<div class="login-input-row">
 						<input type="text" name="title" required lay-verify="required" placeholder="手机号/邮箱" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
+						<div id="verify-wrap"></div>
+					</div>
+					<div class="login-input-row">
 						<input type="text" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<button type="button" class="layui-btn layui-btn-fluid bg582">登陆</button>
+						<button type="button" @click="login" class="layui-btn layui-btn-fluid bg582">登陆</button>
 					</div>
 					<div class="flex-between get-password">
 						<div>
@@ -125,35 +197,54 @@
 					</div>
 				</div>
 				<div class="login-box" v-show="type == 5">
-									<div class="auth-title">邮箱注册</div>
-									<div class="login-input-row">
-										<input type="text" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
-									</div>
-									<div class="login-input-row">
-										<input type="text" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
-									</div>
-									<div class="login-input-row">
-										<button type="button" class="layui-btn layui-btn-fluid bg582">完成</button>
-									</div>
-									<div class="get-password">
-										<div class="c582 cursor">手机注册</div>
-									</div>
-									<div class="flex-center">
-										<div class="c999">已有账号?</div>
-										<div class="c582 cursor">登陆</div>
-									</div>
-								</div>
+					<div class="auth-title">邮箱注册</div>
+					<div class="login-input-row">
+						<input type="text" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+					</div>
+					<div class="login-input-row">
+						<input type="text" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
+					</div>
+					<div class="login-input-row">
+						<button type="button" class="layui-btn layui-btn-fluid bg582">完成</button>
+					</div>
+					<div class="get-password">
+						<div class="c582 cursor">手机注册</div>
+					</div>
+					<div class="flex-center">
+						<div class="c999">已有账号?</div>
+						<div class="c582 cursor">登陆</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<script type="text/javascript" src="./js/footer.js"></script>
 	</body>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="plugins/Sliding_Validation_Gu/Sliding_Validation_Gu.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script type="text/javascript">
 		let vm = new Vue({
 			el: '.auth-box',
 			data: {
-				type: 5,
+				type: 1,
+				userName:'',
+				pass:'',
+				phone:'',
+				email:''
+			},
+			methods:{
+				login() {
+					console.log(123)
+					let data = {
+						userName:'admin@ehash.com',
+						passWd:'123456'
+					}
+					POST(data,'/pub/in',res => {
+						window.localStorage.setItem('Authorization',res.data)
+					})
+				}
 			},
 			mounted() {
 				layui.use(['layer', 'form'], function() {
@@ -161,7 +252,13 @@
 						form = layui.form;
 
 				});
+
 			}
 		})
+		var sliding_validation = SlidingValidation.create($('#verify-wrap'),{
+			success_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/ok.png",
+			default_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/right-arrow.png",
+			slide_block_wrapper_width: "334px"
+		},function(){}); 
 	</script>
 </html>

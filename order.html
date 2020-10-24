@@ -17,7 +17,7 @@
 					<div class="page-title">订单列表</div>
 					<div class="main-item">
 						<div class="table-cont">
-							<table class="layui-table" lay-even lay-skin="nob">
+							<table class="layui-table"  lay-skin="nob">
 							   <thead>
 							      <tr>
 							        <th>订单号</th>
@@ -30,12 +30,12 @@
 							    </thead>
 									<tbody>
 										<tr v-for="item in order">
-											<td>{{item.id}}</td>
-											<td>{{item.type}}</td>
-											<td>{{item.status}}</td>
-											<td>{{item.pay}}</td>
-											<td>{{item.num}}</td>
-											<td>{{item.money}}</td>
+											<td>{{item.ordersId}}</td>
+											<td>{{item.productModelName}}</td>
+											<td>{{status[item.ordersStatus]}}</td>
+											<td>{{item.ordersDownIp}}</td>
+											<td>{{item.ordersProductCount}}</td>
+											<td>{{item.ordersPice}}</td>
 										</tr>
 									</tbody>
 							</table>
@@ -46,6 +46,8 @@
 			</div>
 		</div>
 	</body>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script type="text/javascript">
@@ -58,12 +60,23 @@
 					{icon:'iconfujian',name:'费用记录',link:'cost.html',active:false},
 					{icon:'iconfujian',name:'工单列表',link:'repair.html',active:false},
 				],
-				order:[
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-				]
+				order:[],
+				status:{
+					'0':'待支付',
+					'1':'待上架',
+					'2':'正常',
+					'3':'维护中',
+					'4':'已欠费',
+					'5':'已下架',
+					'6':'已删除'
+				},
+			},
+			methods:{
+				search() {
+					GET({count:999},'/order/list_own_order', res => {
+						this.order = res.data
+					})
+				}
 			},
 			created() {
 				this.nav.map(v => {
@@ -73,6 +86,7 @@
 						v.active = false
 					}
 				})
+				this.search();
 			},
 			mounted() {
 				layui.use('laypage', function(){

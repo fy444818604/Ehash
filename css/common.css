@@ -972,3 +972,11 @@ body {
 	background-color: #5c82ff
 }
 
+.layui-form-checked[lay-skin=primary] i{
+	border-color:#5C82FF;
+	background-color:#5C82FF;
+}
+
+.layui-input{
+	height: 48px;
+}
