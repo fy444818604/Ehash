@@ -6,6 +6,27 @@
 		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
 		<link rel="stylesheet" type="text/css" href="./css/common.css" />
 		<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1465230_x1cs9lb9rh.css"/>
+		<style type="text/css">
+			.add-layer{
+				padding: 15px;
+				
+			}
+			.pack-price-all>.flex{
+				justify-content: flex-start;
+			}
+			.pack-price-all>.flex>div:first-child{
+				width: 70px;
+				text-align: right;
+			}
+			
+			.add-layer{
+				display: none;
+			}
+			
+			.pack-time>li:last-child{
+				margin: 0;
+			}
+		</style>
 	</head>
 	<body>
 		<script type="text/javascript" src="./js/header.js"></script>
@@ -17,48 +38,78 @@
 						<div class="page-title">订单详情</div>
 						<a class="page-title-btn" href="#">提交工单</a>
 					</div>
-					<div class="module-title">订单号：251528785125</div>
+					<div class="module-title">订单号：{{orderId}}</div>
 					<ul class="order-detail">
 						<li v-for="(item,key) in orderDetail">
 							<div>{{key}}</div>
 							<div>:</div>
 							<div class="order-msg">
 								<span>{{item}}</span>
-								<span v-if="key == '电费剩余'" class="electricity">充值电费</span>
+								<span v-if="key == '电费剩余'" class="electricity" @click="add">充值电费</span>
 							</div>
 						</li>
 					</ul>
 					<div class="module-title">费用记录</div>
 					<div class="table-cont" style="margin-top: 24px;">
-						<table class="layui-table" lay-even lay-skin="nob">
-							 <thead>
-									<tr>
-										<th>费用编号</th>
-										<th>项目</th>
-										<th>变动时间</th>
-										<th>金额</th>
-										<th>订单余额</th>
-									</tr> 
-								</thead>
+						<table class="layui-table" lay-skin="nob">
+						   <thead>
+						      <tr>
+						        <th>费用编号</th>
+						        <th>关联订单</th>
+						        <th>项目</th>
+						        <th>时间</th>
+						        <th>金额</th>
+						        <th>订单余额</th>
+						      </tr> 
+						    </thead>
 								<tbody>
-									<tr v-for="item in order">
-										<td>{{item.id}}</td>
-										<td>{{item.type}}</td>
-										<td>{{item.status}}</td>
-										<td>{{item.pay}}</td>
-										<td>{{item.num}}</td>
+									<tr v-for="item in fee">
+										<td>{{item.userAccountChangeId}}</td>
+										<td>{{item.userAccountChangeObjId}}</td>
+										<td>{{type[item.userAccountChangeType]}}</td>
+										<td>{{item.userAccountChangeTime}}</td>
+										<td>{{item.userAccountChangeMoney}}</td>
+										<td>{{item.userAccountChangeAfter}}</td>
 									</tr>
 								</tbody>
 						</table>
 						<div id="page"></div>
 					</div>
+					<div class="add-layer">
+						<div class="flex pack-time-wrap">
+							<div>预交电费：</div>
+							<ul class="pack-time">
+								<li v-for="(item,index) in time" @click="choose(index)" class="cursor" :class="item.active?'active c582':''">
+									{{item.num}}天
+									<img src="./img/gou.png" style="width: 24px;height: 24px;" class="pack-check" v-show="item.active">
+								</li>
+							</ul>
+						</div>
+						<div class="pack-time-detail">
+							<div class="c666">0.0474/T/天 × 1000T ×60天</div>
+							<div class="c999">电费计算公式：功率x24hx天数，当套餐电费剩余天数小于3小时，将自动停机。 </div>
+							<div class="c999">电费最少需先预付30天</div>
+						</div>
+						<div class="pack-price-all" style="border:none">
+							<div class="flex">
+								<div class="c666">电费：</div>
+								<div class="c582">{{powerTotalPice}}</div>
+							</div>
+						</div>
+						<div class="flex-center">
+							<button type="button" @click="confirm" class="layui-btn bg582" style="height: 48px;width: 320px;margin: 0 auto;line-height: 48px;">提交订单</button>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
 	</body>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script type="text/javascript">
+		var layer;
 		var VM = new Vue({
 			el:'.main-body1',
 			data:{
@@ -76,17 +127,109 @@
 					"服务截止": "2022-10-10 15:00",
 					"电费剩余": "509.2"
 				},
-				order:[
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-				]
+				productModelId:'',
+				time:[
+					{num:30,active:true},
+					{num:60,active:false},
+					{num:90,active:false},
+				],
+				fee:[],
+				orderId:'',
+				status:{
+					'0':'待支付',
+					'1':'待上架',
+					'2':'正常',
+					'3':'维护中',
+					'4':'已欠费',
+					'5':'已下架',
+					'6':'已删除'
+				},
+				type:{
+					'1':'下单',
+					'2':'充值电费',
+					'3':'服务费',
+					'4':'维护费',
+					'9':'账户充值'
+				},
+				powerTotalPice:0,
+				index:null
 			},
-			
+			created() {
+				this.orderId = window.location.href.split('id=')[1]
+				console.log(this.orderId)
+				this.search()
+			},
+			methods:{
+				search() {
+					POST({orderId:this.orderId},`/order/own_order_detail`,res => {
+						let val = res.data
+						this.orderDetail = {
+							"产品名": val.productModelName,
+							"数量": val.ordersProductCount + '台',
+							"下单时间": val.ordersDownDate,
+							"订单状态": this.status[val.ordersStatus],
+							"服务截止": val.ordersServiceEnd,
+							"电费剩余": val.ordersElectricityFees
+						}
+						this.productModelId = val.productModelId
+					})
+					
+					GET({ordersId:this.orderId},'/order/list_order_account',res => {
+						this.fee = res.data
+					})
+				},
+				add() {
+					this.index = layer.open({
+					  type: 1, 
+						title:'预付电费',
+						area:['716px','440px'],
+					  content: $('.add-layer')
+					});
+					this.time.map((v,i) => {
+						if(v.active){
+							this.calc(v.num)
+						}
+					})
+				},
+				choose(val) {
+					this.time.map((v,i) => {
+						if(i == val){
+							v.active = true
+							this.calc(v.num)
+						}else{
+							v.active = false
+						}
+					})
+				},
+				calc(num) {
+					POST({
+						productModelId:this.productModelId,
+						productModelPowerDayCount:num,
+						productModelcount:0
+					},'/order/calculate_the_price',res => {
+						this.powerTotalPice = res.data.powerTotalPice
+					})
+				},
+				confirm() {
+					let productModelPowerDayCount;
+					this.time.map(v => {
+						if(v.active){
+							productModelPowerDayCount = v.num
+						}
+					})
+					GET({
+						orderId:this.orderId,
+						productModelPowerDayCount:productModelPowerDayCount
+					},'/order/pay_electricity_charges', res => {
+						alert(res.msg)
+					})
+					layer.close(this.index)
+				}
+			},
 			mounted() {
-				layui.use('laypage', function(){
+				layui.use(['laypage','layer'], function(){
 				  var laypage = layui.laypage;
+					layer = layui.layer;
 				  
 				  laypage.render({
 				    elem: 'page' 
@@ -104,6 +247,8 @@
 						  }
 				  });
 				});
+				
+				
 			}
 		})
 	</script>

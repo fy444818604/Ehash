@@ -106,6 +106,9 @@
 				display: none
 			}
 			
+			.verify-wrap{
+				width: 334px;
+			}
 		</style>
 	</head>
 	<body>
@@ -118,7 +121,7 @@
 						<input type="text" name="title" required lay-verify="required" placeholder="手机号/邮箱" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<div id="verify-wrap"></div>
+						<div class="verify-wrap"></div>
 					</div>
 					<div class="login-input-row">
 						<input type="text" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
@@ -134,85 +137,91 @@
 					</div>
 					<div class="flex-center">
 						<div class="c999">还没有账号?</div>
-						<div class="c582 cursor">立即注册</div>
+						<div class="c582 cursor" @click="type = 2">立即注册</div>
 					</div>
 				</div>
 				<div class="login-box" v-show="type == 2">
 					<div class="auth-title">手机快速注册</div>
 					<div class="login-input-row">
-						<input type="text" name="title" required lay-verify="required" placeholder="手机号" autocomplete="off" class="layui-input">
-					</div>
-					<div class="login-input-row flex-between">
-						<input type="text" name="title" required lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input">
-						<button type="button" class="layui-btn bg582" style="margin-left: 12px;">手机验证码</button>
+						<input type="text" name="title" v-model="phone" required lay-verify="required" placeholder="手机号" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<button type="button" class="layui-btn layui-btn-fluid bg582">下一步</button>
+						<div class="verify-wrap1"></div>
+					</div>
+					<div class="login-input-row flex-between">
+						<input type="text" v-model="verificationCode" name="title" required lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input">
+						<button type="button" class="layui-btn bg582" style="margin-left: 12px;" @click="getCode">手机验证码</button>
+					</div>
+					<div class="login-input-row">
+						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="phoneCode">下一步</button>
 					</div>
 					<div class="get-password">
-						<div class="c582 cursor">邮箱注册</div>
+						<div class="c582 cursor" @click="type = 4">邮箱注册</div>
 					</div>
 					<div class="flex-center">
 						<div class="c999">已有账号?</div>
-						<div class="c582 cursor">登陆</div>
+						<div class="c582 cursor" @click="type = 1">登陆</div>
 					</div>
 				</div>
 				<div class="login-box" v-show="type == 3">
 					<div class="auth-title">手机快速注册</div>
 					<div class="login-input-row">
-						<input type="text" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+						<input type="text" v-model="pass1" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<input type="text" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
+						<input type="text" v-model="pass2" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<button type="button" class="layui-btn layui-btn-fluid bg582">完成</button>
+						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="setPass">完成</button>
 					</div>
 					<div class="get-password">
-						<div class="c582 cursor">邮箱注册</div>
+						<div class="c582 cursor" @click="type = 4">邮箱注册</div>
 					</div>
 					<div class="flex-center">
 						<div class="c999">已有账号?</div>
-						<div class="c582 cursor">登陆</div>
+						<div class="c582 cursor"  @click="type = 1">登陆</div>
 					</div>
 				</div>
 				<div class="login-box" v-show="type == 4">
 					<div class="auth-title">邮箱注册</div>
 					<div class="login-input-row">
-						<input type="text" name="title" required lay-verify="required" placeholder="手机号/邮箱" autocomplete="off" class="layui-input">
-					</div>
-					<div class="login-input-row flex-between">
-						<input type="text" name="title" required lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input">
-						<button type="button" class="layui-btn bg582" style="margin-left: 12px;">手机验证码</button>
+						<input type="text" name="title" v-model="email" required lay-verify="required" placeholder="邮箱" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<button type="button" class="layui-btn layui-btn-fluid bg582">下一步</button>
+						<div class="verify-wrap2"></div>
+					</div>
+					<div class="login-input-row flex-between">
+						<input type="text" name="title" v-model="verificationCode1" required lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input">
+						<button type="button" class="layui-btn bg582" style="margin-left: 12px;" @click="getCode1">邮箱验证码</button>
+					</div>
+					<div class="login-input-row">
+						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="emailCode">下一步</button>
 					</div>
 					<div class="get-password">
-						<div class="c582 cursor">手机注册</div>
+						<div class="c582 cursor" @click="type = 2">手机注册</div>
 					</div>
 					<div class="flex-center">
 						<div class="c999">已有账号?</div>
-						<div class="c582 cursor">登陆</div>
+						<div class="c582 cursor"  @click="type = 1">登陆</div>
 					</div>
 				</div>
 				<div class="login-box" v-show="type == 5">
 					<div class="auth-title">邮箱注册</div>
 					<div class="login-input-row">
-						<input type="text" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+						<input type="text" v-model="pass1" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<input type="text" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
+						<input type="text" v-model="pass2" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<button type="button" class="layui-btn layui-btn-fluid bg582">完成</button>
+						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="setPass">完成</button>
 					</div>
 					<div class="get-password">
-						<div class="c582 cursor">手机注册</div>
+						<div class="c582 cursor" @click="type = 2">手机注册</div>
 					</div>
 					<div class="flex-center">
 						<div class="c999">已有账号?</div>
-						<div class="c582 cursor">登陆</div>
+						<div class="c582 cursor"  @click="type = 1">登陆</div>
 					</div>
 				</div>
 			</div>
@@ -232,18 +241,61 @@
 				userName:'',
 				pass:'',
 				phone:'',
-				email:''
+				verificationCode:'',
+				email:'',
+				verificationCode1:'',
+				key:'',
+				pass1:'',
+				pass2:''
 			},
 			methods:{
 				login() {
-					console.log(123)
 					let data = {
 						userName:'admin@ehash.com',
 						passWd:'123456'
 					}
 					POST(data,'/pub/in',res => {
 						window.localStorage.setItem('Authorization',res.data)
+						window.location.href = 'person.html'
 					})
+				},
+				phoneCode() {
+					POST({tel:this.phone,verificationCode:this.verificationCode},`/pub/tel_reg`, res => {
+						this.key = res.data
+						this.type = 3
+					})
+				},
+				emailCode() {
+					POST({email:this.email,verificationCode:this.verificationCode1},'i/pub/email_reg', res => {
+						
+					})
+				},
+				getCode() {
+					POST({address:this.phone},'/pub/send_v_code', res => {
+						
+					})
+				},
+				getCode1() {
+					POST({address:this.email},'/pub/send_v_code', res => {
+						
+					})
+				},
+				setPass() {
+					if(this.pass1 == this.pass2){
+						POST({passWord:this.pass2,key:this.key},`/pub/reset_pwd`, res => {
+							if(res.code == 200){
+								alert('注册成功')
+								this.type = 1
+							}
+						})
+					}else{
+						alert('密码不一致')
+					}
+				}
+			},
+			watch:{
+				type() {
+					
 				}
 			},
 			mounted() {
@@ -252,13 +304,22 @@
 						form = layui.form;
 
 				});
-
 			}
 		})
-		var sliding_validation = SlidingValidation.create($('#verify-wrap'),{
+		var sliding_validation = SlidingValidation.create($('.verify-wrap'),{
 			success_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/ok.png",
 			default_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/right-arrow.png",
 			slide_block_wrapper_width: "334px"
 		},function(){}); 
+		var sliding_validation = SlidingValidation.create($('.verify-wrap1'),{
+			success_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/ok.png",
+			default_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/right-arrow.png",
+			slide_block_wrapper_width: "334px"
+		},function(){});
+		 var sliding_validation = SlidingValidation.create($('.verify-wrap2'),{
+		 	success_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/ok.png",
+		 	default_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/right-arrow.png",
+		 	slide_block_wrapper_width: "334px"
+		 },function(){}); 
 	</script>
 </html>

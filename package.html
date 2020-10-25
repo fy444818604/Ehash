@@ -102,7 +102,9 @@
 			<div style="height: 72px;"></div>
 		</div>
 	</body>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script type="text/javascript">
 		var VM = new Vue({
@@ -123,7 +125,21 @@
 					'预付电费':'666.00',
 					'折扣':'-253.00',
 					'应付总额':'2699.00'
+				},
+				productModelId:''
+			},
+			
+			methods:{
+				search() {
+					POST({productModelId:this.productModelId},'/product_model/sock',res => {
+						
+					})
 				}
+			},
+			
+			created() {
+				this.productModelId = window.location.href.split('id=')[1]
+				this.search()
 			},
 			
 			mounted() {

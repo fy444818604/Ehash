@@ -20,39 +20,39 @@
 							<div class="layui-inline">
 								<label class="layui-form-label">用户名:</label>
 								<div class="layui-input-inline" style="width: 200px;">
-									<input type="text" autocomplete="off" class="layui-input">
+									<input type="text" autocomplete="off" class="layui-input" v-model="userName">
 								</div>
 							</div>
 							<div class="layui-inline">
 								<label class="layui-form-label">金额:</label>
 								<div class="layui-input-inline" style="width: 120px;">
-									<input type="text" autocomplete="off" class="layui-input">
+									<input type="text" autocomplete="off" class="layui-input" v-model="userAccountChangeMoney">
 								</div>
 							</div>
 							<div class="layui-inline" style="margin-left: 20px;">
-								<button type="button" class="layui-btn bg582">增加</button>
+								<button type="button" class="layui-btn bg582" @click="add">增加</button>
 							</div>
 						</div>
 						<div class="table-cont" style="margin-top: 24px;">
-							<table class="layui-table" lay-skin="line" lay-size="lg">
-								 <thead>
-										<tr>
-											<th>费用编号</th>
-											<th>关联订单</th>
-											<th>项目</th>
-											<th>时间</th>
-											<th>金额</th>
-											<th>订单余额</th>
-										</tr> 
-									</thead>
+							<table class="layui-table" lay-skin="nob">
+							   <thead>
+							      <tr>
+							        <th>费用编号</th>
+							        <th>关联订单</th>
+							        <th>项目</th>
+							        <th>时间</th>
+							        <th>金额</th>
+							        <th>订单余额</th>
+							      </tr> 
+							    </thead>
 									<tbody>
-										<tr v-for="item in order">
-											<td>{{item.id}}</td>
-											<td>{{item.type}}</td>
-											<td>{{item.status}}</td>
-											<td>{{item.pay}}</td>
-											<td>{{item.num}}</td>
-											<td>{{item.money}}</td>
+										<tr v-for="item in fee">
+											<td>{{item.userAccountChangeId}}</td>
+											<td>{{item.userAccountChangeObjId}}</td>
+											<td>{{type[item.userAccountChangeType]}}</td>
+											<td>{{item.userAccountChangeTime}}</td>
+											<td>{{item.userAccountChangeMoney}}</td>
+											<td>{{item.userAccountChangeAfter}}</td>
 										</tr>
 									</tbody>
 							</table>
@@ -67,6 +67,7 @@
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script type="text/javascript">
+		var layer;
 		var VM = new Vue({
 			el:'.main-body1',
 			data:{
@@ -77,6 +78,8 @@
 					{icon:'iconfujian',name:'工单列表',link:'repair.html',active:false},
 					{icon:'iconfujian',name:'充值中心',link:'topUp.html',active:false},
 				],
+				userAccountChangeMoney:'',
+				userName:'',
 				orderDetail:{
 					"客户邮箱": "344345@sina.com",
 					"客户电话": "13585215754",
@@ -87,18 +90,32 @@
 					"服务截止": "2022-10-10 15:00",
 					"电费剩余": "509.2"
 				},
-				order:[
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-				]
+				fee:[],
+				type:{
+					'1':'下单',
+					'2':'充值电费',
+					'3':'服务费',
+					'4':'维护费',
+					'9':'账户充值'
+				}	
 			},
 			
 			methods:{
 				search() {
-					GET({count:999},'/account/list_account',res => {
-						console.log(res);
+					POST({count:999,userName:this.userName},'/account/list_account',res => {
+						console.log(123)
+						this.fee = res.data
+					})
+				},
+				add() {
+					GET({
+						userAccountChangeMoney:this.userAccountChangeMoney,
+						userName:this.userName
+					},'/account/top_up', res => {
+						if(res.code == 200){
+							layer.msg('充值成功');
+							this.search()
+						}
 					})
 				}
 			},
@@ -111,12 +128,12 @@
 						v.active = false
 					}
 				})
-				this.search()
 			},
 			
 			mounted() {
-				layui.use('laypage', function(){
+				layui.use(['laypage','layer'], function(){
 				  var laypage = layui.laypage;
+					layer = layui.layer;
 				  
 				  laypage.render({
 				    elem: 'page' 

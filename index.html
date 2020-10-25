@@ -83,7 +83,21 @@
 				<div class="title">打造私人专属矿机</div>
 				<div class="subhead">简化挖矿繁琐步骤，打包矿机筛选、部署、维护、技术服务等复杂环节</div>
 				<ul class="third-list">
-					<li>
+					<li v-for="item in list" :class="item.productModelSock == 0?'sell-out':''">
+						<div class="third-item-1">{{item.productMiningName}}</div>
+						<div class="third-item-2">0.0136<span class="ft24">/T/天</span></div>
+						<div class="division"></div>
+						<div class="third-item-3">{{item.productModelServiceTime}}天</div>
+						<div class="third-item-4">{{item.productModelRage}} TH/s</div>
+						<div class="flex pro-cont">
+							<div class="pro-wrap">
+								<div class="pro-item" :style="{width:getNum(item.productModelSock,item.productModelTotle)+'%'}"></div>
+							</div>
+							<div>已售{{getNum(item.productModelSock,item.productModelTotle)}}%</div>
+						</div>
+						<a :href="'package.html?id='+item.productModelId" class="third-item-5">立即购买 | {{item.productModelPice}}<a>
+					</li>
+					<!-- <li>
 						<div class="third-item-1">易哈希SERVER-I</div>
 						<div class="third-item-2">0.0136<span class="ft24">/T/天</span></div>
 						<div class="division"></div>
@@ -138,7 +152,7 @@
 							<div>已售61%</div>
 						</div>
 						<div class="third-item-5">立即购买 | 491.00</div>
-					</li>
+					</li> -->
 				</ul>
 			</div>
 		</div>
@@ -246,6 +260,8 @@
 	</body>
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
 	<script src="./js/jquery.scrollBanner.js" type="text/javascript"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script type="text/javascript">
 		$("#banner").scrollBanner({
 			images : [
@@ -261,5 +277,25 @@
 			iconHoverColor : "#FFFFFF",
 			iconPosition : "center"
 		});
+		
+		var VM = new Vue({
+			el:'.third-list',
+			data:{
+				list:[]
+			},
+			created() {
+				this.search()
+			},
+			methods:{
+				search() {
+					GET({},'/pub/product_model',res => {
+						this.list = res.data
+					})
+				},
+				getNum(i,j) {
+					return Math.floor((j-i)/j*100)
+				}
+			}
+		})
 	</script>
 </html>

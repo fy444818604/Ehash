@@ -26,7 +26,7 @@
 					<div class="main-item">
 						<div class="main-item-top flex-between">
 							<div class="main-item-title">我的订单</div>
-							<a class="main-item-more" href="#">更多></a>
+							<a class="main-item-more" href="order.html">更多></a>
 						</div>
 						<div class="table-cont">
 							<table class="layui-table"  lay-skin="nob">
@@ -42,7 +42,11 @@
 							    </thead>
 									<tbody>
 										<tr v-for="item in order">
-											<td>{{item.ordersId}}</td>
+											<td>
+												<a :href="'orderDetail.html?id='+item.ordersId" class="c582">
+													{{item.ordersId}}
+												</a>
+											</td>
 											<td>{{item.productModelName}}</td>
 											<td>{{status[item.ordersStatus]}}</td>
 											<td>{{item.ordersDownIp}}</td>
@@ -56,7 +60,7 @@
 					<div class="main-item">
 						<div class="main-item-top flex-between">
 							<div class="main-item-title">费用记录</div>
-							<a class="main-item-more" href="#">更多></a>
+							<a class="main-item-more" href="cost.html">更多></a>
 						</div>
 						<div class="table-cont">
 							<table class="layui-table" lay-skin="nob">
@@ -72,7 +76,7 @@
 							    </thead>
 									<tbody>
 										<tr v-for="item in fee">
-											<td>{{item.userAccountChangeId}}</td>
+											<td class="c582">{{item.userAccountChangeId}}</td>
 											<td>{{item.userAccountChangeObjId}}</td>
 											<td>{{type[item.userAccountChangeType]}}</td>
 											<td>{{item.userAccountChangeTime}}</td>
@@ -128,6 +132,8 @@
 					{icon:'iconfujian',name:'我的订单',link:'order.html',active:false},
 					{icon:'iconfujian',name:'费用记录',link:'cost.html',active:false},
 					{icon:'iconfujian',name:'工单列表',link:'repair.html',active:false},
+					{icon:'iconfujian',name:'充值中心',link:'topUp.html',active:false},
+					{icon:'iconfujian',name:'订单维护',link:'orderMan.html',active:false},
 				],
 				personData:[
 					{icon:'./img/person1.png',num:0,name:'矿机总数',bg:'#E4FAF4'},

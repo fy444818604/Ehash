@@ -309,7 +309,7 @@ h6 {
 	color: #FFFFFF;
 	font-size: 14px;
 	margin-top: 39px;
-	padding: 14px 53px;
+	padding: 14px 24px;
 	cursor: pointer;
 	width: 219px;
 	text-align: center;
@@ -351,9 +351,7 @@ h6 {
 
 .sell-out .third-item-5 {
 	border: 2px solid #74777f !important;
-	;
 	color: #74777f !important;
-	;
 	background: transparent !important;
 }
 
@@ -761,6 +759,9 @@ body {
 	color: #5c82ff;
 	cursor: pointer;
 	margin-left: 10px;
+	padding: 3px 10px;
+	border: 1px solid #5c82ff;
+	border-radius: 4px;
 }
 
 .other-container{
@@ -979,4 +980,8 @@ body {
 
 .layui-input{
 	height: 48px;
+}
+
+.layui-layer-dialog .layui-layer-content{
+	color: #FFFFFF;
 }
