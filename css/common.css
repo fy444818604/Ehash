@@ -802,10 +802,12 @@ body {
 	display: flex;
 	justify-content: space-between;
 	margin-top: 24px;
+	flex-wrap: wrap;
 }
 
 .pack-list>li{
-	padding: 0 57px;
+	padding: 0 34px;
+	margin-bottom: 20px;
 	width: 330px;
 	height: 144px;
 	border: 1px solid rgba(0,0,0,0.15);
@@ -859,6 +861,7 @@ body {
 .pack-detail-item{
 	display: flex;
 	margin-bottom: 16px;
+	align-items: center;
 }
 
 .pack-price-all{

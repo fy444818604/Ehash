@@ -21,12 +21,12 @@
 					<div class="page-title fs16">选择套餐</div>
 				</div>
 				<ul class="pack-list">
-					<li v-for="item in pack" class="cursor" :class="item.active?'active':''">
+					<li v-for="(item,index) in pack" class="cursor" :class="item.active?'active':''" @click="packChoose(index)">
 						<div class="pack-top">
-							<span class="pack-price" :class="item.active?'c582':''">{{item.price}}</span>
+							<span class="pack-price" :class="item.active?'c582':''">{{item.productModelPice}}</span>
 							<span class="pack-unit">元</span>
 						</div>
-						<div class="pack-name">{{item.name}}</div>
+						<div class="pack-name">{{item.productModelName}}</div>
 						<img src="./img/gou.png" class="pack-check" v-show="item.active">
 					</li>
 				</ul>
@@ -34,24 +34,27 @@
 					<div class="flex-between">
 						<div class="pack-detail-item">
 							<div>机型：</div>
-							<div>蚂蚁矿机</div>
+							<div>{{productMiningName}}</div>
 						</div>
 						<div class="pack-detail-item">
 							<div>算力：</div>
-							<div>100TH/S</div>
+							<div>{{productModelRage}}TH/S</div>
 						</div>
 						<div class="pack-detail-item">
 							<div>服务周期：</div>
-							<div>365天(2020.07.27-2021.07.22)</div>
+							<div>{{productModelServiceTime}}天</div>
 						</div>
 					</div>
 					<div class="pack-detail-item">
 						<div>单价：</div>
-						<div>99.00</div>
+						<div>{{productModelPice}}</div>
 					</div>
 					<div class="pack-detail-item">
 						<div>数量：</div>
-						<div>100台</div>
+						<div class="flex" style="align-items: center;">
+							<input type="text" v-model="num" class="layui-input" style="height: 28px; width: 60px;"/>
+							<span style="margin-left: 5px;">台</span>
+						</div>
 					</div>
 					<div class="pack-detail-item">
 						<div>说明：</div>
@@ -61,7 +64,7 @@
 				<div class="pack-price-all">
 					<div class="flex">
 						<div class="c666">产品费用：</div>
-						<div class="c582">1999.00</div>
+						<div class="c582">{{productTotalPice}}</div>
 					</div>
 				</div>
 				<div class="flex-between">
@@ -70,7 +73,7 @@
 				<div class="flex pack-time-wrap">
 					<div>预交电费：</div>
 					<ul class="pack-time">
-						<li v-for="item in time" class="cursor" :class="item.active?'active c582':''">
+						<li v-for="(item,index) in time" class="cursor" @click="choose(index)" :class="item.active?'active c582':''">
 							{{item.num}}天
 							<img src="./img/gou.png" style="width: 24px;height: 24px;" class="pack-check" v-show="item.active">
 						</li>
@@ -84,7 +87,7 @@
 				<div class="pack-price-all">
 					<div class="flex">
 						<div class="c666">电费：</div>
-						<div class="c582">1999.00</div>
+						<div class="c582">{{powerTotalPice}}</div>
 					</div>
 				</div>
 				<div class="computed">
@@ -96,7 +99,7 @@
 					</ul>
 				</div>
 				<div class="flex-center">
-					<button type="button" class="layui-btn bg582 order-add">提交订单</button>
+					<button type="button" class="layui-btn bg582 order-add" @click="pay">提交订单</button>
 				</div>
 			</div>
 			<div style="height: 72px;"></div>
@@ -110,11 +113,7 @@
 		var VM = new Vue({
 			el:'.main-body1',
 			data:{
-				pack:[
-					{name:'易哈希 SERVER-II',price:'999',active:true},
-					{name:'易哈希 SERVER-II',price:'999',active:false},
-					{name:'易哈希 SERVER-II',price:'999',active:false},
-				],
+				pack:[],
 				time:[
 					{num:30,active:true},
 					{num:60,active:false},
@@ -126,23 +125,96 @@
 					'折扣':'-253.00',
 					'应付总额':'2699.00'
 				},
-				productModelId:''
+				productModelId:'',
+				productMiningName:'',
+				productModelRage:'',
+				productModelServiceTime:0,
+				productModelPice:0,
+				num:1,
+				day:30,
+				productTotalPice:0,
+				powerTotalPice:0
 			},
 			
 			methods:{
 				search() {
-					POST({productModelId:this.productModelId},'/product_model/sock',res => {
+					GET({},'/pub/product_model',res => {
+						this.pack = res.data
+						this.pack.map((v,i) => {
+							if(i == 0){
+								v.active = true
+								this.productMiningName=v.productMiningName;
+								this.productModelRage=v.productModelRage;
+								this.productModelServiceTime=v.productModelServiceTime;
+								this.productModelPice =	v.productModelPice;
+								this.productModelId = v.productModelId
+							}else{
+								v.active = false
+							}
+						})
+						this.calc()
+					})
+				},
+				packChoose(index) {
+					this.pack.map((v,i) => {
+						if(i == index){
+							v.active = true
+							// this.calc(v.num)
+							this.productMiningName=v.productMiningName;
+							this.productModelRage=v.productModelRage;
+							this.productModelServiceTime=v.productModelServiceTime;
+							this.productModelPice =	v.productModelPice;
+							this.productModelId = v.productModelId
+						}else{
+							v.active = false
+						}
+					})
+					this.calc()
+				},
+				choose(val) {
+					this.time.map((v,i) => {
+						if(i == val){
+							v.active = true
+							this.day = v.num
+						}else{
+							v.active = false
+						}
+					})
+					this.calc()
+				},
+				calc() {
+					POST({
+						productModelId:this.productModelId,
+						productModelPowerDayCount:this.day,
+						productModelcount:this.num
+					},'/order/calculate_the_price',res => {
+						this.productTotalPice = res.data.productTotalPice
+						this.powerTotalPice = res.data.powerTotalPice
+						this.price = {
+							'矿机及服务费':this.productTotalPice,
+							'预付电费':this.powerTotalPice,
+							'折扣':res.data.allowance,
+							'应付总额':res.data.ordersPice
+						}
+					})
+				},
+				pay() {
+					POST({
+						productModelId:this.productModelId,
+						productModelPowerDayCount:this.day,
+						productModelcount:this.num
+					},'order/place_order',res => {
 						
 					})
 				}
 			},
 			
 			created() {
-				this.productModelId = window.location.href.split('id=')[1]
 				this.search()
 			},
 			
 			mounted() {
+				
 			}
 		})
 	</script>
