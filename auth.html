@@ -13,12 +13,16 @@
 				background-color: #FFFFFF;
 				border-radius: 4px;
 				box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
+				position: absolute;
+				left: 50%;
+				margin-left: -280px;
 			}
 
 			.auth-box {
-				display: flex;
-				justify-content: center;
+				/* display: flex; */
+				/* justify-content: center; */
 				padding: 48px 0;
+				position: relative;
 			}
 
 			.auth-title {
@@ -109,6 +113,10 @@
 			.verify-wrap{
 				width: 334px;
 			}
+			
+			.main-body{
+				min-height: calc(100vh - 200px);
+			}
 		</style>
 	</head>
 	<body>
@@ -124,7 +132,7 @@
 						<div class="verify-wrap"></div>
 					</div>
 					<div class="login-input-row">
-						<input type="text" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+						<input type="password" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
 						<button type="button" @click="login" class="layui-btn layui-btn-fluid bg582">登陆</button>
@@ -150,7 +158,7 @@
 					</div>
 					<div class="login-input-row flex-between">
 						<input type="text" v-model="verificationCode" name="title" required lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input">
-						<button type="button" class="layui-btn bg582" style="margin-left: 12px;" @click="getCode">手机验证码</button>
+						<button type="button" class="layui-btn bg582" style="margin-left: 12px;" @click="getCode" :disabled="phoneMsg != '发送验证码'">{{phoneMsg}}</button>
 					</div>
 					<div class="login-input-row">
 						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="phoneCode">下一步</button>
@@ -166,7 +174,7 @@
 				<div class="login-box" v-show="type == 3">
 					<div class="auth-title">手机快速注册</div>
 					<div class="login-input-row">
-						<input type="text" v-model="pass1" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+						<input type="password" v-model="pass1" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
 						<input type="text" v-model="pass2" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
@@ -192,7 +200,7 @@
 					</div>
 					<div class="login-input-row flex-between">
 						<input type="text" name="title" v-model="verificationCode1" required lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input">
-						<button type="button" class="layui-btn bg582" style="margin-left: 12px;" @click="getCode1">邮箱验证码</button>
+						<button type="button" class="layui-btn bg582" style="margin-left: 12px;" @click="getCode1" :disabled="emailMsg != '发送验证码'">{{emailMsg}}</button>
 					</div>
 					<div class="login-input-row">
 						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="emailCode">下一步</button>
@@ -208,7 +216,7 @@
 				<div class="login-box" v-show="type == 5">
 					<div class="auth-title">邮箱注册</div>
 					<div class="login-input-row">
-						<input type="text" v-model="pass1" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+						<input type="password" v-model="pass1" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
 						<input type="text" v-model="pass2" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
@@ -229,6 +237,7 @@
 		<script type="text/javascript" src="./js/footer.js"></script>
 	</body>
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="plugins/Sliding_Validation_Gu/Sliding_Validation_Gu.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
@@ -246,18 +255,27 @@
 				verificationCode1:'',
 				key:'',
 				pass1:'',
-				pass2:''
+				pass2:'',
+				loginSu:false,
+				phoneSu:false,
+				emailSu:false,
+				phoneMsg:'发送验证码',
+				emailMsg:'发送验证码'
 			},
 			methods:{
 				login() {
-					let data = {
-						userName:'admin@ehash.com',
-						passWd:'123456'
+					if(this.loginSu){
+						let data = {
+							userName:'admin@ehash.com',
+							passWd:'123456'
+						}
+						POST(data,'/pub/in',res => {
+							window.localStorage.setItem('Authorization',res.data)
+							window.location.href = 'person.html'
+						})
+					}else{
+						layer.msg('请先滑动验证')
 					}
-					POST(data,'/pub/in',res => {
-						window.localStorage.setItem('Authorization',res.data)
-						window.location.href = 'person.html'
-					})
 				},
 				phoneCode() {
 					POST({tel:this.phone,verificationCode:this.verificationCode},`/pub/tel_reg`, res => {
@@ -270,26 +288,53 @@
 						
 					})
 				},
+				
 				getCode() {
-					POST({address:this.phone},'/pub/send_v_code', res => {
-						
-					})
+					let _this = this;
+					if(this.phoneSu){
+						POST({address:this.phone},'/pub/send_v_code', res => {
+							_this.phoneMsg = 60
+							var time = setInterval(() => {
+								_this.phoneMsg = _this.phoneMsg - 1
+								console.log(_this.phoneMsg)
+								if(_this.phoneMsg == 0){
+									clearInterval(time)
+									_this.phoneMsg = '发送验证码'
+								}
+							},1000)
+						})
+					}else{
+						layer.msg('请先滑动验证')
+					}
 				},
 				getCode1() {
-					POST({address:this.email},'/pub/send_v_code', res => {
-						
-					})
+					let _this = this;
+					if(this.emailSu){
+						POST({address:this.email},'/pub/send_v_code', res => {
+							_this.emailMsg = 60
+							var time = setInterval(() => {
+								_this.emailMsg = _this.emailMsg - 1
+								console.log(_this.emailMsg)
+								if(_this.emailMsg == 0){
+									clearInterval(time)
+									_this.emailMsg = '发送验证码'
+								}
+							},1000)
+						})
+					}else{
+						layer.msg('请先滑动验证')
+					}
 				},
 				setPass() {
 					if(this.pass1 == this.pass2){
 						POST({passWord:this.pass2,key:this.key},`/pub/reset_pwd`, res => {
 							if(res.code == 200){
-								alert('注册成功')
+								layer.msg('注册成功')
 								this.type = 1
 							}
 						})
 					}else{
-						alert('密码不一致')
+						layer.msg('密码不一致')
 					}
 				}
 			},
@@ -297,6 +342,9 @@
 				type() {
 					
 				}
+			},
+			created() {
+				this.type = window.location.href.split('type=')[1]
 			},
 			mounted() {
 				layui.use(['layer', 'form'], function() {
@@ -310,16 +358,22 @@
 			success_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/ok.png",
 			default_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/right-arrow.png",
 			slide_block_wrapper_width: "334px"
-		},function(){}); 
+		},function(){
+			vm.loginSu = true
+		}); 
 		var sliding_validation = SlidingValidation.create($('.verify-wrap1'),{
 			success_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/ok.png",
 			default_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/right-arrow.png",
 			slide_block_wrapper_width: "334px"
-		},function(){});
+		},function(){
+			vm.phoneSu = true
+		});
 		 var sliding_validation = SlidingValidation.create($('.verify-wrap2'),{
 		 	success_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/ok.png",
 		 	default_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/right-arrow.png",
 		 	slide_block_wrapper_width: "334px"
-		 },function(){}); 
+		 },function(){
+			 vm.emailSu = true
+		 }); 
 	</script>
 </html>

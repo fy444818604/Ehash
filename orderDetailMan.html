@@ -15,11 +15,15 @@
 				width: 100px;
 				height: 32px;
 			}
+			
+			.bg678{
+				background-color: #6780a4!important;
+			}
 		</style>
 	</head>
 	<body>
 		<script type="text/javascript" src="./js/header.js"></script>
-		<div class="main-body1">
+		<div class="main-body1" v-cloak>
 			<div class="main-container">
 				<script type="text/javascript" src="./js/nav.js"></script>
 				<div class="normal-right">
@@ -55,7 +59,7 @@
 									</select>
 								</div>
 								<div v-show="key=='服务截止'&&edit" class="flex-center">
-									<input type="text" style="width: 80px;height: 28px;" class="layui-input" id="time">
+									<input type="text" style="width: 160px;height: 28px;" v-model="ordersServiceEnd" class="layui-input" id="time">
 								</div>
 								<div v-show="key=='电费剩余'&&edit" class="flex-center" style="align-items: center;">
 									<input type="text" class="layui-input" style="margin-right: 10px;width: 60px;height: 28px;" v-model="ordersElectricityFees"/>
@@ -70,13 +74,13 @@
 					</ul>
 					<div class="module-title flex-between">
 						<div>矿机列表</div>
-						<div class="flex detail-add">
+						<div class="flex detail-add" @click="macAdd">
 							<i class="iconfont icon-add"></i>
 							<div>新增</div>
 						</div>
 					</div>
 					<div class="table-cont" style="margin-top: 24px;">
-						<table class="layui-table" lay-even lay-skin="nob">
+						<table class="layui-table" lay-skin="line" lay-size="lg">
 							 <thead>
 									<tr>
 										<th>机器ID</th>
@@ -87,29 +91,52 @@
 								</thead>
 								<tbody>
 									<tr v-for="item in order">
-										<td>{{item.ordersMachineId}}</td>
-										<td>{{item.ordersMachineWhere}}</td>
-										<td>{{macStatus[item.ordersMachineStataus]}}</td>
+										<td>
+											<span v-show="!item.active">{{item.ordersMachineSn}}</span>
+											<input v-show="item.active" style="width: 160px;height: 36px;" type="text" class="layui-input" v-model="item.ordersMachineSn"/>
+										</td>
+										<td>
+											<span v-show="!item.active">{{room[item.ordersMachineWhere]}}</span>
+											<select lay-ignore v-show="item.active" style="width: 160px;height: 36px;border: 1px solid #e6e6e6;" v-model="item.ordersMachineWhere">
+												<option value="1">默认机房</option>
+											</select>
+										</td>
+										<td>
+											<span v-show="!item.active">{{macStatus[item.ordersMachineStataus]}}</span>
+											<select v-show="item.active" lay-ignore style="width: 160px;height: 36px;border: 1px solid #e6e6e6;" v-model="item.ordersMachineStataus">
+												<option value="1">运行中</option>
+												<option value="2">已停机</option>
+												<option value="3">维护中</option>
+											</select>
+										</td>
 										<td>
 											<ul class="flex op">
-												<li>编辑</li>
-												<li>移除</li>
+												<li class="cursor" v-show="!item.active" @click="editMac(item)">编辑</li>
+												<li class="cursor" v-show="!item.active" @click="delMac(item)">移除</li>
+												<li v-show="item.active">
+													<button type="button" class="layui-btn bg582" @click="saveMac(item)">保存</button>
+												</li>
+												<li v-show="item.active">
+													<button type="button" class="layui-btn bg678" @click="macCancel(item)">取消</button>
+												</li>
 											</ul>
 										</td>
 									</tr>
 								</tbody>
 						</table>
-						<div id="page"></div>
+						<!-- <div id="page"></div> -->
 					</div>
 				</div>
 			</div>
 		</div>
 	</body>
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
-	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
+		var laydate
 		var VM = new Vue({
 			el:'.main-body1',
 			data:{
@@ -128,6 +155,9 @@
 					'1':'运行中',
 					'2':'已停机',
 					'3':'维护中'
+				},
+				room:{
+					1:'默认机房'
 				},
 				orderDetail:{
 					"客户邮箱": "344345@sina.com",
@@ -155,18 +185,27 @@
 			},
 			
 			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							$('.user-name').html(res.data.userEmail)
+						}else{
+							$('.user-name').html(res.data.userTel)
+						}
+					})
+				},
 				search() {
 					POST({orderId:this.orderId},'/order/order_detail',res => {
 						let val = res.data;
 						this.orderDetail = {
+							"服务截止": val.ordersServiceEnd,
 							"客户邮箱": val.userEmail,
 							"客户电话": val.userTel,
 							"产品名": val.productModelName,
 							"数量": val.ordersProductCount + '台',
 							"下单时间": val.ordersDownDate,
 							"订单状态": this.status[val.ordersStatus],
-							"服务截止": val.ordersServiceEnd,
-							"电费剩余": val.ordersElectricityFees
+							"电费剩余": val.ordersElectricityFees,
 						}
 						this.num = val.ordersProductCount
 						this.ordersElectricityFees = val.ordersElectricityFees
@@ -175,12 +214,16 @@
 					})
 					
 					GET({ordersId:this.orderId},'/machine/list',res => {
+						res.data.map(v => {
+							v.active = false
+						})
 						this.order = res.data
+						
 					})
 				},
 				editStatus(key) {
 					let str = true
-					if((key == '数量' || key == '订单状态' || key == '服务截至' || key == '电费剩余')&& this.edit ){
+					if((key == '数量' || key == '订单状态' || key == '服务截止' || key == '电费剩余')&& this.edit ){
 						str = false
 					}
 					
@@ -200,10 +243,65 @@
 						this.search()
 						this.edit = false
 					})
+				},
+				macAdd() {
+					let item = {
+						ordersMachineSn:'',
+						ordersMachineWhere:'1',
+						ordersMachineStataus:'1',
+						active:true
+					}
+					this.order = [item,...this.order]
+				},
+				macCancel(item){
+					if(item.ordersMachineSn){
+						item.active = false
+					}else{
+						this.order.splice(0,1)
+					}
+				},
+				saveMac(item) {
+					let data = {
+						ordersId:this.orderId,
+						ordersMachineSn:item.ordersMachineSn,
+						ordersMachineWhere: item.ordersMachineWhere,
+						ordersMachineStataus: item.ordersMachineStataus,
+					}
+					if(item.ordersMachineSn != ''){
+						if(item.ordersMachineId){
+							Object.assign(data,{ordersMachineId:item.ordersMachineId})
+						}
+						POST(data,'/machine/update',res => {
+							if(res.code == 200){
+								layer.msg('更新成功')
+								item.active = false
+								this.search()
+							}
+						})
+					}else{
+						layer.msg('机器ID不能为空')
+					}
+				},
+				editMac(item) {
+					item.active = true
+				},
+				delMac(item) {
+					POST({ordersMachineId:item.ordersMachineId},'/machine/delete', res => {
+						if(res.code == 200){
+							layer.msg('删除成功')
+							this.search()
+						}
+					})
 				}
 			},
 			
 			created() {
+				let user
+				if(window.localStorage.getItem('Authorization')){
+					user = getUserjwt(window.localStorage.getItem('Authorization'))
+					this.nav = JSON.parse(user.menu)
+				}
+				this.getUser()
 				this.nav.map(v => {
 					if(v.name == document.title){
 						v.active = true
@@ -216,16 +314,26 @@
 				this.search()
 			},
 			
+			watch:{
+				type() {
+					
+				}
+			},
+			
 			mounted() {
 				let _this = this;
 				layui.use(['laypage', 'form', 'laydate'], function(){
 				  var laypage = layui.laypage;
 				  var form = layui.form;
-					var laydate  = layui.laydate;
+					laydate  = layui.laydate;
 					
 					laydate.render({
 						elem: '#time'
-						,type: 'datetime'
+						// ,type: 'datetime',
+						,format: 'yyyy-MM-dd',
+						done: function(value, date, endDate){
+						  _this.ordersServiceEnd = value
+						}
 					});
 					
 					form.on('select(status)', data => {

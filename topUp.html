@@ -9,7 +9,7 @@
 	</head>
 	<body>
 		<script type="text/javascript" src="./js/header.js"></script>
-		<div class="main-body1">
+		<div class="main-body1" v-cloak>
 			<div class="main-container">
 					<script type="text/javascript" src="./js/nav.js"></script>
 					<div class="normal-right">
@@ -30,7 +30,7 @@
 								</div>
 							</div>
 							<div class="layui-inline" style="margin-left: 20px;">
-								<button type="button" class="layui-btn bg582" @click="add">增加</button>
+								<button type="button" class="layui-btn bg582" @click="add">充值</button>
 							</div>
 						</div>
 						<div class="table-cont" style="margin-top: 24px;">
@@ -56,18 +56,18 @@
 										</tr>
 									</tbody>
 							</table>
-							<div id="page"></div>
+							<!-- <div id="page"></div> -->
 						</div>
 					</div>
 			</div>
 		</div>
 	</body>
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
-	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		var layer;
 		var VM = new Vue({
 			el:'.main-body1',
 			data:{
@@ -77,6 +77,7 @@
 					{icon:'iconfujian',name:'费用记录',link:'cost.html',active:false},
 					{icon:'iconfujian',name:'工单列表',link:'repair.html',active:false},
 					{icon:'iconfujian',name:'充值中心',link:'topUp.html',active:false},
+					{icon:'iconfujian',name:'订单维护',link:'orderMan.html',active:false},
 				],
 				userAccountChangeMoney:'',
 				userName:'',
@@ -101,6 +102,15 @@
 			},
 			
 			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							$('.user-name').html(res.data.userEmail)
+						}else{
+							$('.user-name').html(res.data.userTel)
+						}
+					})
+				},
 				search() {
 					POST({count:999,userName:this.userName},'/account/list_account',res => {
 						console.log(123)
@@ -121,6 +131,12 @@
 			},
 			
 			created() {
+				let user
+				if(window.localStorage.getItem('Authorization')){
+					user = getUserjwt(window.localStorage.getItem('Authorization'))
+					this.nav = JSON.parse(user.menu)
+				}
+				this.getUser()
 				this.nav.map(v => {
 					if(v.name == document.title){
 						v.active = true

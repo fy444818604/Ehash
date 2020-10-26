@@ -14,7 +14,7 @@
 	</head>
 	<body>
 		<script type="text/javascript" src="./js/header.js"></script>
-		<div class="main-body1">
+		<div class="main-body1" v-cloak>
 			<div style="height:30px"></div>
 			<div class="other-container"> 
 				<div class="flex-between">
@@ -80,7 +80,7 @@
 					</ul>
 				</div>
 				<div class="pack-time-detail">
-					<div class="c666">0.0474/T/天 × 1000T ×60天</div>
+					<!-- <div class="c666">0.0474/T/天 × 1000T ×60天</div> -->
 					<div class="c999">电费计算公式：功率x24hx天数，当套餐电费剩余天数小于3小时，将自动停机。 </div>
 					<div class="c999">电费最少需先预付30天</div>
 				</div>
@@ -106,6 +106,7 @@
 		</div>
 	</body>
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -204,8 +205,16 @@
 						productModelPowerDayCount:this.day,
 						productModelcount:this.num
 					},'order/place_order',res => {
-						
+						if(res.data.placeOrderStatus == 1){
+							window.location.href = 'order.html'
+						}
 					})
+				}
+			},
+			
+			watch:{
+				num() {
+					this.calc()
 				}
 			},
 			
@@ -214,7 +223,8 @@
 			},
 			
 			mounted() {
-				
+				$('.menu>li:first-child').attr('class','')
+				$('.menu>li:nth-child(2)').attr('class','active')
 			}
 		})
 	</script>

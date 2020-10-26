@@ -9,6 +9,7 @@
 
 body {
 	font-size: 14px;
+	zoom: 0.9;
 }
 
 [v-cloak] {
@@ -943,7 +944,7 @@ body {
 }
 .computed>ul>li>div:nth-child(2){
 	text-align: right;
-	width: 112px;
+	min-width: 112px;
 	margin-left: 10px;
 }
 
@@ -987,4 +988,14 @@ body {
 
 .layui-layer-dialog .layui-layer-content{
 	color: #FFFFFF;
+}
+
+.layui-table[lay-size=lg] td, .layui-table[lay-size=lg] th{
+	padding: 15px;
+}
+
+.nav-img{
+	width: 16px;
+	height: 16px;
+	margin-right: 5px;
 }

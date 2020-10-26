@@ -10,41 +10,24 @@
 	</head>
 	<body>
 		<script type="text/javascript" src="./js/header.js"></script>
-		<div class="main-body1">
+		<div class="main-body1" v-cloak>
 			<div class="main-container">
 				<script type="text/javascript" src="./js/nav.js"></script>
 				<div class="normal-right">
 					<div class="page-title">工单列表</div>
 					<div class="main-item">
-						<div class="table-cont">
-							<table class="layui-table" lay-even lay-skin="nob">
-								 <thead>
-										<tr>
-											<th>工单号</th>
-											<th>主题</th>
-											<th>类型</th>
-											<th>时间</th>
-											<th>状态</th>
-										</tr> 
-									</thead>
-									<tbody>
-										<tr v-for="item in order">
-											<td>{{item.id}}</td>
-											<td>{{item.type}}</td>
-											<td>{{item.status}}</td>
-											<td>{{item.pay}}</td>
-											<td>{{item.num}}</td>
-										</tr>
-									</tbody>
-							</table>
-							<div id="page"></div>
+						<div class="table-cont" id="table-cont">
+							
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</body>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 	<script type="text/javascript">
 		var VM = new Vue({
@@ -61,9 +44,28 @@
 					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
 					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
 					{id:200212356489781,type:'易哈希SERVER-III',status:1,pay:'充值',num:100,money:'450.00'},
-				]
+				],
+				userName:''
+			},
+			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							$('.user-name').html(res.data.userEmail)
+						}else{
+							$('.user-name').html(res.data.userTel)
+						}
+					})
+				},
 			},
 			created() {
+				let user
+				if(window.localStorage.getItem('Authorization')){
+					user = getUserjwt(window.localStorage.getItem('Authorization'))
+					this.nav = JSON.parse(user.menu)
+				}
+				this.getUser()
+				this.userName = user.username
 				this.nav.map(v => {
 					if(v.name == document.title){
 						v.active = true
@@ -71,6 +73,7 @@
 						v.active = false
 					}
 				})
+				
 			},
 			mounted() {
 				layui.use('laypage', function(){
@@ -92,6 +95,54 @@
 						  }
 				  });
 				});
+				
+				let _this = this;
+				POST({},'/work_order/get_token',res => {
+					(function () {
+					
+					        var token = _this.userName;
+									console.log(token)
+					        var scriptDom = document.createElement("script");
+					        scriptDom.src = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/static/vendor/js/jquery.min.js?t=" + token;
+					        document.body.appendChild(scriptDom);
+					        var scriptDom = document.createElement("script");
+					        scriptDom.src = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/1.0.1/js/sdk.min.js?t=" + token;
+					        document.body.appendChild(scriptDom);
+					        var styleDom = document.createElement("link");
+					        styleDom.rel = "stylesheet";
+					        styleDom.href = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/1.0.1/css/sdk.min.css?t=" + token;
+					        document.body.appendChild(styleDom);
+					        scriptDom.addEventListener('load', function () {
+					            var udesk = UdeskSDK.ticketSDK.init({
+					                // [Required] Must provide subdomain.
+					                subdomain: '1504682.s4.udesk.cn',
+					                // [Required] Must provide client appId.
+					                appid: 'f90fa445e8b68177',
+					                // [Required] Must provide signature.
+					                signature: res.data,
+					                // [Required] Must provide type.
+					                type: "token",
+					                // [Required] Must provide content.
+					                content: token,
+					                theme: "default",
+					                lang: "ZH-CN"
+					            });
+					            // Your code goes here...
+					
+					
+					            udesk.create({
+												 container: document.getElementById('table-cont'),
+					                type: 'list',
+					                height: "100%",
+					                width: "100%"
+					            });
+					
+					
+					        }, false);
+					
+					
+					    })();
+				})
 			}
 		})
 	</script>

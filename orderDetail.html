@@ -30,13 +30,13 @@
 	</head>
 	<body>
 		<script type="text/javascript" src="./js/header.js"></script>
-		<div class="main-body1">
+		<div class="main-body1" v-cloak>
 			<div class="main-container">
 				<script type="text/javascript" src="./js/nav.js"></script>
 				<div class="normal-right">
 					<div class="flex-between">
 						<div class="page-title">订单详情</div>
-						<a class="page-title-btn" href="work.html">提交工单</a>
+						<a class="page-title-btn" :href="'work.html?id='+orderId">提交工单</a>
 					</div>
 					<div class="module-title">订单号：{{orderId}}</div>
 					<ul class="order-detail">
@@ -51,7 +51,7 @@
 					</ul>
 					<div class="module-title">费用记录</div>
 					<div class="table-cont" style="margin-top: 24px;">
-						<table class="layui-table" lay-skin="nob">
+						<table class="layui-table" lay-skin="line" lay-size="lg">
 						   <thead>
 						      <tr>
 						        <th>费用编号</th>
@@ -64,12 +64,12 @@
 						    </thead>
 								<tbody>
 									<tr v-for="item in fee">
-										<td>{{item.userAccountChangeId}}</td>
-										<td>{{item.userAccountChangeObjId}}</td>
-										<td>{{type[item.userAccountChangeType]}}</td>
-										<td>{{item.userAccountChangeTime}}</td>
-										<td>{{item.userAccountChangeMoney}}</td>
-										<td>{{item.userAccountChangeAfter}}</td>
+										<td>{{item.amountChangeId}}</td>
+										<td>{{item.ordersId}}</td>
+										<td>{{type[item.amountChangeType]}}</td>
+										<td>{{item.amountChangeTime}}</td>
+										<td>￥{{item.amountChangeMoney}}</td>
+										<td>￥{{item.amountChangeAfter}}</td>
 									</tr>
 								</tbody>
 						</table>
@@ -105,19 +105,22 @@
 		</div>
 	</body>
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
-	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
-		var layer;
+		// var layer1;
 		var VM = new Vue({
 			el:'.main-body1',
 			data:{
 				nav:[
-					{icon:'iconfujian',name:'个人中心',link:'person.html',active:false},
+					{icon:'iconfujian',name:'个人中心',link:'person.html',active:true},
 					{icon:'iconfujian',name:'我的订单',link:'order.html',active:false},
 					{icon:'iconfujian',name:'费用记录',link:'cost.html',active:false},
 					{icon:'iconfujian',name:'工单列表',link:'repair.html',active:false},
+					{icon:'iconfujian',name:'充值中心',link:'topUp.html',active:false},
+					{icon:'iconfujian',name:'订单维护',link:'orderMan.html',active:false},
 				],
 				orderDetail:{
 					"产品名": "易哈希",
@@ -145,21 +148,40 @@
 					'6':'已删除'
 				},
 				type:{
-					'1':'下单',
-					'2':'充值电费',
-					'3':'服务费',
-					'4':'维护费',
-					'9':'账户充值'
+					1:'电费充值',
+					2:'电费扣费',
 				},
 				powerTotalPice:0,
 				index:null
 			},
 			created() {
+				let user
+				if(window.localStorage.getItem('Authorization')){
+					user = getUserjwt(window.localStorage.getItem('Authorization'))
+					this.nav = JSON.parse(user.menu)
+				}
+				this.getUser()
+				this.nav.map(v => {
+					if(v.name == document.title){
+						v.active = true
+					}else{
+						v.active = false
+					}
+				})
 				this.orderId = window.location.href.split('id=')[1]
 				console.log(this.orderId)
 				this.search()
 			},
 			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							$('.user-name').html(res.data.userEmail)
+						}else{
+							$('.user-name').html(res.data.userTel)
+						}
+					})
+				},
 				search() {
 					POST({orderId:this.orderId},`/order/own_order_detail`,res => {
 						let val = res.data
@@ -221,7 +243,8 @@
 						orderId:this.orderId,
 						productModelPowerDayCount:productModelPowerDayCount
 					},'/order/pay_electricity_charges', res => {
-						alert(res.msg)
+						layer.msg(res.msg)
+						this.search()
 					})
 					layer.close(this.index)
 				}

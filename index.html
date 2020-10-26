@@ -4,6 +4,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width,initial-scale=0.2,maximum-scale=0.2,user-scalable=0">
 		<title>EHash</title>
+		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
 		<link rel="stylesheet" type="text/css" href="./css/common.css"/>
 		<style type="text/css">
 			
@@ -20,16 +21,16 @@
 				<div class="flex logo-wrap">
 					<img src="./img/logo.png" >
 					<ul class="menu">
-						<li class="active"><a href="#">首页</a></li>
-						<li><a href="#">价格</a></li>
+						<li class="active"><a href="index.html">首页</a></li>
+						<li><a href="package.html">价格</a></li>
 						<li><a href="#">新闻</a></li>
 						<li><a href="#">帮助中心</a></li>
 						<li><a href="#">我的算力</a></li>
 					</ul>
 				</div>
 				<div class="flex login-op">
-					<div class="login">登陆</div>
-					<div class="regist">注册</div>
+					<a href="auth.html?type=1" class="login">登陆</a>
+					<a href="auth.html?type=2" class="regist">注册</a>
 					<div class="lang-op">
 						<div>CN</div>
 						<div class="arrow-btm"></div>
@@ -78,7 +79,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="wrap">
+		<div class="wrap lista" v-cloak>
 			<div class="index-third">
 				<div class="title">打造私人专属矿机</div>
 				<div class="subhead">简化挖矿繁琐步骤，打包矿机筛选、部署、维护、技术服务等复杂环节</div>
@@ -259,6 +260,7 @@
 		</div>
 	</body>
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./js/jquery.scrollBanner.js" type="text/javascript"></script>
 	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -279,7 +281,7 @@
 		});
 		
 		var VM = new Vue({
-			el:'.third-list',
+			el:'.lista',
 			data:{
 				list:[]
 			},

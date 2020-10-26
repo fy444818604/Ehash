@@ -11,8 +11,18 @@
 
 </div>
 <script type="text/javascript" src="./js/jquery.min.js"></script>
+<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript">
+		
+		let user,userName;
+		if(window.localStorage.getItem('Authorization')){
+			user = getUserjwt(window.localStorage.getItem('Authorization'))
+			userName = user.username
+		}
+		
+		let orderId = window.location.href.split('id=')[1]
 		
 		POST({},'/work_order/get_token',res => {
 			
@@ -82,7 +92,7 @@
 
     (function () {
 
-        var token = "kehu_12345";
+        var token = userName;
 
         var scriptDom = document.createElement("script");
         scriptDom.src = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/static/vendor/js/jquery.min.js?t=" + token;
@@ -111,12 +121,15 @@
             });
             // Your code goes here...
 
-
-            setTimeout(function () {
-                udesk.newTicket.setDefaultFormData({
-                    TextField_1281: Math.random(4) * 10000
-                });
-            }, 3000);
+						
+						if(orderId){
+							setTimeout(function () {
+							    udesk.newTicket.setDefaultFormData({
+							        TextField_1281: orderId
+							    });
+							}, 3000);
+						}
+          
 
             udesk.create({
                 type: 'new',
@@ -128,11 +141,11 @@
                 }
             });
 
-            udesk.create({
-                type: 'list',
-                height: "100%",
-                width: "100%"
-            });
+            // udesk.create({
+            //     type: 'list',
+            //     height: "100%",
+            //     width: "100%"
+            // });
 
 //            setTimeout(function () {
 //                udesk.newTicket.setDefaultFormData({

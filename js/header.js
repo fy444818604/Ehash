@@ -13,16 +13,16 @@ document.writeln(`<div class="header-cont">
 						<div class="flex logo-wrap">
 							<img src="./img/logo.png">
 							<ul class="menu">
-								<li class="active"><a href="#">首页</a></li>
-								<li><a href="#">价格</a></li>
+								<li class="active"><a href="index.html">首页</a></li>
+								<li><a href="package.html">价格</a></li>
 								<li><a href="#">新闻</a></li>
 								<li><a href="#">帮助中心</a></li>
 								<li><a href="#">我的算力</a></li>
 							</ul>
 						</div>
 						<div class="flex login-op">
-							<div class="login">登陆</div>
-							<div class="regist">注册</div>
+							<a href="auth.html?type=1" class="login">登陆</a>
+							<a href="auth.html?type=2" class="regist">注册</a>
 							<div class="lang-op">
 								<div>CN</div>
 								<div class="arrow-btm"></div>
