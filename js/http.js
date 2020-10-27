@@ -24,10 +24,13 @@ let POST = (data={},url,callback) => {
 			if(result.code == 200){
 				callback(result)
 			}else if(result.code == 403){
-				layer.msg('请先登录')
-				setTimeout(() => {
-					window.location.href = 'auth.html?type=1'
-				},2000)
+				if(url != '/user/get_own_info'){
+					layer.msg('请先登录')
+					window.localStorage.removeItem('Authorization')
+					setTimeout(() => {
+						window.location.href = 'auth.html?type=1'
+					},2000)
+				}
 			}else{
 				layer.msg(result.msg)
 			}
@@ -61,10 +64,13 @@ let GET = (data={},url,callback) => {
 			if(result.code == 200){
 				callback(result)
 			}else if(result.code == 403){
-				layer.msg('请先登录')
-				setTimeout(() => {
-					window.location.href = 'auth.html?type=1'
-				},2000)
+				if(url != '/user/get_own_info'){
+					layer.msg('请先登录')
+					window.localStorage.removeItem('Authorization')
+					setTimeout(() => {
+						window.location.href = 'auth.html?type=1'
+					},2000)
+				}
 			}else{
 				layer.msg(result.msg)
 			}
@@ -88,5 +94,14 @@ var getUserjwt = function (jwt) {
     
 }
 
-
+$('.login-out').click(() => {
+	console.log(123)
+	let name = $('.head-user').text()
+	GET({userName:name},'/pub/out',res => {
+		if(res.code == 200){
+			window.localStorage.removeItem('Authorization')
+			window.location.href = 'index.html'
+		}
+	})
+})
 

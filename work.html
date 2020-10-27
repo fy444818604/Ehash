@@ -1,171 +1,176 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-    <!--<script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>-->
-</head>
-<body>
-
-<div id="kk" style="background: lavender">
-
-</div>
-<script type="text/javascript" src="./js/jquery.min.js"></script>
-<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
-<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
-<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript">
+	<head>
+		<meta charset="utf-8">
+		<title>工单</title>
+		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="./css/common.css" />
+		<link rel="stylesheet" type="text/css" href="./css/font_1465230_6hjw6lptphb/iconfont.css"/>
 		
-		let user,userName;
-		if(window.localStorage.getItem('Authorization')){
-			user = getUserjwt(window.localStorage.getItem('Authorization'))
-			userName = user.username
-		}
-		
+	</head>
+	<body>
+		<script type="text/javascript" src="./js/header.js"></script>
+		<div class="main-body1" v-cloak>
+			<div class="main-container">
+				<script type="text/javascript" src="./js/nav.js"></script>
+				<div class="normal-right">
+					<div class="page-title">工单</div>
+					<div class="main-item">
+						<div class="table-cont" id="table-cont">
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./js/vue.min.js"></script>
+	<script type="text/javascript">
 		let orderId = window.location.href.split('id=')[1]
-		
-		POST({},'/work_order/get_token',res => {
-			
-		})
-
-    function encodeUTF8(s) {
-        var i, r = [], c, x;
-        for (i = 0; i < s.length; i++)
-            if ((c = s.charCodeAt(i)) < 0x80) r.push(c);
-            else if (c < 0x800) r.push(0xC0 + (c >> 6 & 0x1F), 0x80 + (c & 0x3F));
-            else {
-                if ((x = c ^ 0xD800) >> 10 == 0) //对四字节UTF-16转换为Unicode
-                    c = (x << 10) + (s.charCodeAt(++i) ^ 0xDC00) + 0x10000,
-                            r.push(0xF0 + (c >> 18 & 0x7), 0x80 + (c >> 12 & 0x3F));
-                else r.push(0xE0 + (c >> 12 & 0xF));
-                r.push(0x80 + (c >> 6 & 0x3F), 0x80 + (c & 0x3F));
-            }
-        ;
-        return r;
-    }
-
-    // 字符串加密成 hex 字符串
-    function sha1(s) {
-        var data = new Uint8Array(encodeUTF8(s))
-        var i, j, t;
-        var l = ((data.length + 8) >>> 6 << 4) + 16, s = new Uint8Array(l << 2);
-        s.set(new Uint8Array(data.buffer)), s = new Uint32Array(s.buffer);
-        for (t = new DataView(s.buffer), i = 0; i < l; i++)s[i] = t.getUint32(i << 2);
-        s[data.length >> 2] |= 0x80 << (24 - (data.length & 3) * 8);
-        s[l - 1] = data.length << 3;
-        var w = [], f = [
-                    function () {
-                        return m[1] & m[2] | ~m[1] & m[3];
-                    },
-                    function () {
-                        return m[1] ^ m[2] ^ m[3];
-                    },
-                    function () {
-                        return m[1] & m[2] | m[1] & m[3] | m[2] & m[3];
-                    },
-                    function () {
-                        return m[1] ^ m[2] ^ m[3];
-                    }
-                ], rol = function (n, c) {
-                    return n << c | n >>> (32 - c);
-                },
-                k = [1518500249, 1859775393, -1894007588, -899497514],
-                m = [1732584193, -271733879, null, null, -1009589776];
-        m[2] = ~m[0], m[3] = ~m[1];
-        for (i = 0; i < s.length; i += 16) {
-            var o = m.slice(0);
-            for (j = 0; j < 80; j++)
-                w[j] = j < 16 ? s[i + j] : rol(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1),
-                        t = rol(m[0], 5) + f[j / 20 | 0]() + m[4] + w[j] + k[j / 20 | 0] | 0,
-                        m[1] = rol(m[1], 30), m.pop(), m.unshift(t);
-            for (j = 0; j < 5; j++)m[j] = m[j] + o[j] | 0;
-        }
-        ;
-        t = new DataView(new Uint32Array(m).buffer);
-        for (var i = 0; i < 5; i++)m[i] = t.getUint32(i << 2);
-
-        var hex = Array.prototype.map.call(new Uint8Array(new Uint32Array(m).buffer), function (e) {
-            return (e < 16 ? "0" : "") + e.toString(16);
-        }).join("");
-        return hex;
-    }
-
-    (function () {
-
-        var token = userName;
-
-        var scriptDom = document.createElement("script");
-        scriptDom.src = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/static/vendor/js/jquery.min.js?t=" + token;
-        document.body.appendChild(scriptDom);
-        var scriptDom = document.createElement("script");
-        scriptDom.src = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/1.0.1/js/sdk.min.js?t=" + token;
-        document.body.appendChild(scriptDom);
-        var styleDom = document.createElement("link");
-        styleDom.rel = "stylesheet";
-        styleDom.href = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/1.0.1/css/sdk.min.css?t=" + token;
-        document.body.appendChild(styleDom);
-        scriptDom.addEventListener('load', function () {
-            var udesk = UdeskSDK.ticketSDK.init({
-                // [Required] Must provide subdomain.
-                subdomain: '1504682.s4.udesk.cn',
-                // [Required] Must provide client appId.
-                appid: 'f90fa445e8b68177',
-                // [Required] Must provide signature.
-                signature: sha1("f90fa445e8b68177&token&" + token + "&f93d9b334895ee4a2ae9721f7ddff53f"),
-                // [Required] Must provide type.
-                type: "token",
-                // [Required] Must provide content.
-                content: token,
-                theme: "default",
-                lang: "ZH-CN"
-            });
-            // Your code goes here...
-
-						
-						if(orderId){
-							setTimeout(function () {
-							    udesk.newTicket.setDefaultFormData({
-							        TextField_1281: orderId
-							    });
-							}, 3000);
+		var head = new Vue({
+			el:'.header-cont',
+			data:{
+				userName1:''
+			},
+			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							this.userName1 = res.data.userEmail
+						}else{
+							this.userName1 = res.data.userTel
 						}
-          
-
-            udesk.create({
-                type: 'new',
-                container: document.body,
-                height: "100%",
-                width: "100%",
-                position: {
-                    position: "relative"
-                }
-            });
-
-            // udesk.create({
-            //     type: 'list',
-            //     height: "100%",
-            //     width: "100%"
-            // });
-
-//            setTimeout(function () {
-//                udesk.newTicket.setDefaultFormData({
-//                    TextField_1281: '1234567890'
-//                });
-//            }, 10000);
-
-//            udesk.create({
-//                type: "list",
-//                height: "500px",
-//                width: "100%",
-//                container:"kk"
-//            });
-//            udesk.create({type:"detail",ticketId:96379})
-
-        }, false);
-
-
-    })();
-</script>
-</body>
+					})
+				}
+			},
+			created() {
+				this.getUser()
+			},
+			mounted() {
+				
+			}
+		})
+		var VM = new Vue({
+			el:'.main-body1',
+			data:{
+				nav:[
+					{icon:'iconfujian',name:'个人中心',link:'person.html',active:true},
+						{icon:'iconfujian',name:'我的订单',link:'order.html',active:false},
+						{icon:'iconfujian',name:'费用记录',link:'cost.html',active:false},
+						{icon:'iconfujian',name:'工单列表',link:'repair.html',active:false},
+				],
+				userName:''
+			},
+			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							$('.user-name').html(res.data.userEmail)
+						}else{
+							$('.user-name').html(res.data.userTel)
+						}
+					})
+				},
+			},
+			created() {
+				let user
+				if(window.localStorage.getItem('Authorization')){
+					user = getUserjwt(window.localStorage.getItem('Authorization'))
+					this.nav = JSON.parse(user.menu)
+				}
+				this.getUser()
+				this.userName = user.username
+				this.nav.map(v => {
+					if(v.name == document.title){
+						v.active = true
+					}else{
+						v.active = false
+					}
+				})
+				
+			},
+			mounted() {
+				
+				let _this = this;
+				POST({},'/work_order/get_token',res => {
+					(function () {
+					
+					        var token = _this.userName;
+									console.log(token)
+					        var scriptDom = document.createElement("script");
+					        scriptDom.src = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/static/vendor/js/jquery.min.js?t=" + token;
+					        document.body.appendChild(scriptDom);
+					        var scriptDom = document.createElement("script");
+					        scriptDom.src = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/1.0.1/js/sdk.min.js?t=" + token;
+					        document.body.appendChild(scriptDom);
+					        var styleDom = document.createElement("link");
+					        styleDom.rel = "stylesheet";
+					        styleDom.href = "https://assets-cli.s4.udesk.cn/ticket_js_sdk/1.0.1/css/sdk.min.css?t=" + token;
+					        document.body.appendChild(styleDom);
+					        scriptDom.addEventListener('load', function () {
+					            var udesk = UdeskSDK.ticketSDK.init({
+					                // [Required] Must provide subdomain.
+					                subdomain: '1504682.s4.udesk.cn',
+					                // [Required] Must provide client appId.
+					                appid: 'f90fa445e8b68177',
+					                // [Required] Must provide signature.
+					                signature: res.data,
+					                // [Required] Must provide type.
+					                type: "token",
+					                // [Required] Must provide content.
+					                content: token,
+					                theme: "default",
+					                lang: "ZH-CN"
+					            });
+					            // Your code goes here...
+					
+											if(orderId){
+												setTimeout(function () {
+												    udesk.newTicket.setDefaultFormData({
+												        TextField_1281: orderId
+												    });
+												}, 3000);
+											}
+					
+											udesk.create({
+											    type: 'new',
+											    container: document.getElementById('table-cont'),
+											    height: "100%",
+											    width: "100%",
+											    position: {
+											        position: "relative"
+											    }
+											});
+					
+					
+					        }, false);
+					
+					
+					    })();
+				})
+			}
+		})
+		
+		$('.login-out').click(() => {
+			console.log(123)
+			let name = $('.head-user').text()
+			GET({
+				userName: name
+			}, '/pub/out', res => {
+				if (res.code == 200) {
+					window.localStorage.removeItem('Authorization')
+					window.location.href = 'index.html'
+				}
+			})
+		})
+	</script>
 </html>
+
+
+
+
 

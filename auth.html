@@ -15,6 +15,7 @@
 				box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.08);
 				position: absolute;
 				left: 50%;
+				top: 48px;
 				margin-left: -280px;
 			}
 
@@ -123,16 +124,17 @@
 		<script type="text/javascript" src="./js/header.js"></script>
 		<div class="main-body">
 			<div class="auth-box layui-form" v-cloak>
+				<div style="height: 600px;"></div>
 				<div class="login-box" v-show="type == 1">
 					<div class="auth-title">欢迎登陆</div>
 					<div class="login-input-row">
-						<input type="text" name="title" required lay-verify="required" placeholder="手机号/邮箱" autocomplete="off" class="layui-input">
+						<input type="text" name="title" v-model="userName" required lay-verify="required" placeholder="手机号/邮箱" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
 						<div class="verify-wrap"></div>
 					</div>
 					<div class="login-input-row">
-						<input type="password" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+						<input type="password" name="title" v-model="pass" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
 						<button type="button" @click="login" class="layui-btn layui-btn-fluid bg582">登陆</button>
@@ -177,7 +179,7 @@
 						<input type="password" v-model="pass1" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<input type="text" v-model="pass2" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
+						<input type="password" v-model="pass2" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
 						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="setPass">完成</button>
@@ -219,7 +221,7 @@
 						<input type="password" v-model="pass1" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
-						<input type="text" v-model="pass2" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
+						<input type="password" v-model="pass2" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
 					</div>
 					<div class="login-input-row">
 						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="setPass">完成</button>
@@ -241,8 +243,31 @@
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
 	<script src="plugins/Sliding_Validation_Gu/Sliding_Validation_Gu.js" type="text/javascript" charset="utf-8"></script>
 	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="./js/vue.min.js"></script>
 	<script type="text/javascript">
+		var head = new Vue({
+			el:'.header-cont',
+			data:{
+				userName1:''
+			},
+			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							this.userName1 = res.data.userEmail
+						}else{
+							this.userName1 = res.data.userTel
+						}
+					})
+				}
+			},
+			created() {
+				this.getUser()
+			},
+			mounted() {
+				
+			}
+		})
 		let vm = new Vue({
 			el: '.auth-box',
 			data: {
@@ -266,8 +291,8 @@
 				login() {
 					if(this.loginSu){
 						let data = {
-							userName:'admin@ehash.com',
-							passWd:'123456'
+							userName:this.userName,
+							passWd: this.pass
 						}
 						POST(data,'/pub/in',res => {
 							window.localStorage.setItem('Authorization',res.data)
@@ -375,5 +400,18 @@
 		 },function(){
 			 vm.emailSu = true
 		 }); 
+		 
+		 $('.login-out').click(() => {
+		 	console.log(123)
+		 	let name = $('.head-user').text()
+		 	GET({
+		 		userName: name
+		 	}, '/pub/out', res => {
+		 		if (res.code == 200) {
+		 			window.localStorage.removeItem('Authorization')
+		 			window.location.href = 'index.html'
+		 		}
+		 	})
+		 })
 	</script>
 </html>

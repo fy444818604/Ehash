@@ -1,4 +1,5 @@
-document.writeln(`<div class="header-cont">
+document.writeln(
+	`<div class="header-cont" v-cloak>
 			<div class="header-top">
 				<div class="wrap">
 					<div class="trumpet">
@@ -21,8 +22,13 @@ document.writeln(`<div class="header-cont">
 							</ul>
 						</div>
 						<div class="flex login-op">
-							<a href="auth.html?type=1" class="login">登陆</a>
-							<a href="auth.html?type=2" class="regist">注册</a>
+							<a v-show="userName1 == ''" href="auth.html?type=1" class="login">登陆</a>
+							<a v-show="userName1 == ''" href="auth.html?type=2" class="regist">注册</a>
+							<a href="person.html" v-show="userName1 != ''" class="head-user-wrap">
+								<div class="head-user">{{userName1}}</div>
+								<div class="arrow-btm"></div>
+							</a>
+							<div class="login-out" v-show="userName1 != ''">退出登陆</div>
 							<div class="lang-op">
 								<div>CN</div>
 								<div class="arrow-btm"></div>
@@ -32,4 +38,6 @@ document.writeln(`<div class="header-cont">
 				</div>
 			</div>
 		</div>
-`)
+`
+)
+

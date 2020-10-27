@@ -5,7 +5,7 @@
 		<title>订单维护</title>
 		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
 		<link rel="stylesheet" type="text/css" href="./css/common.css" />
-		<link rel="stylesheet" type="text/css" href="//at.alicdn.com/t/font_1465230_x1cs9lb9rh.css"/>
+		<link rel="stylesheet" type="text/css" href="./css/font_1465230_6hjw6lptphb/iconfont.css"/>
 		<style type="text/css">
 			.order-detail>li{
 				align-items: center;
@@ -59,7 +59,7 @@
 									</select>
 								</div>
 								<div v-show="key=='服务截止'&&edit" class="flex-center">
-									<input type="text" style="width: 160px;height: 28px;" v-model="ordersServiceEnd" class="layui-input" id="time">
+									<input readonly="readonly" type="text" style="width: 160px;height: 28px;" v-model="ordersServiceEnd" class="layui-input" id="time">
 								</div>
 								<div v-show="key=='电费剩余'&&edit" class="flex-center" style="align-items: center;">
 									<input type="text" class="layui-input" style="margin-right: 10px;width: 60px;height: 28px;" v-model="ordersElectricityFees"/>
@@ -133,10 +133,33 @@
 	<script type="text/javascript" src="./js/jquery.min.js"></script>
 	<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
 	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="./js/vue.min.js"></script>
 	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		var laydate
+		var head = new Vue({
+			el:'.header-cont',
+			data:{
+				userName1:''
+			},
+			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							this.userName1 = res.data.userEmail
+						}else{
+							this.userName1 = res.data.userTel
+						}
+					})
+				}
+			},
+			created() {
+				this.getUser()
+			},
+			mounted() {
+				
+			}
+		})
 		var VM = new Vue({
 			el:'.main-body1',
 			data:{
@@ -357,6 +380,18 @@
 				  });
 				});
 			}
+		})
+		$('.login-out').click(() => {
+			console.log(123)
+			let name = $('.head-user').text()
+			GET({
+				userName: name
+			}, '/pub/out', res => {
+				if (res.code == 200) {
+					window.localStorage.removeItem('Authorization')
+					window.location.href = 'index.html'
+				}
+			})
 		})
 	</script>
 </html>
