@@ -4,7 +4,8 @@ layui.use('layer', () => {
 })
 
 
-const host = 'http://ehash.com/api'
+const host = 'http://192.168.38.20:50000'
+// const host = 'https://ehash.com/api'
 let POST = (data={},url,callback) => {
 	$.ajax({
 		//请求方式

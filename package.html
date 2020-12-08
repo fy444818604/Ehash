@@ -61,6 +61,7 @@
 						<div>付款3天内上架，该价格包含矿机产权和服务费</div>
 					</div>
 				</div>
+				
 				<div class="pack-price-all">
 					<div class="flex">
 						<div class="c666">产品费用：</div>
@@ -90,6 +91,15 @@
 						<div class="c582">{{powerTotalPice}}</div>
 					</div>
 				</div>
+				<div class="pack-detail" style="margin-bottom: 36px;;">
+					<div class="pack-detail-item">
+						<div>代理商ID：</div>
+						<div class="flex" style="align-items: center;">
+							<input type="text" v-model="disId" @blur="calc" class="layui-input" style="height: 28px; width: 200px;"/>
+						</div>
+					</div>
+				</div>
+				<div style="border-bottom: 1px solid #EEEEEE;margin-bottom: 28px;"></div>
 				<div class="computed">
 					<ul>
 						<li v-for="(item,key) in price">
@@ -157,7 +167,8 @@
 				num:1,
 				day:30,
 				productTotalPice:0,
-				powerTotalPice:0
+				powerTotalPice:0,
+				disId:''
 			},
 			
 			methods:{
@@ -210,8 +221,10 @@
 					POST({
 						productModelId:this.productModelId,
 						productModelPowerDayCount:this.day,
-						productModelcount:this.num
+						productModelcount:this.num,
+						agentId:this.disId
 					},'/order/calculate_the_price',res => {
+						console.log(res)
 						this.productTotalPice = res.data.productTotalPice
 						this.powerTotalPice = res.data.powerTotalPice
 						this.price = {

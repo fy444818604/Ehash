@@ -143,7 +143,7 @@
 						<div>
 							<input type="checkbox" name="" title="记住密码" lay-skin="primary" checked>
 						</div>
-						<div class="c582 cursor">忘记密码</div>
+						<div class="c582 cursor" @click="type = 6">忘记密码</div>
 					</div>
 					<div class="flex-center">
 						<div class="c999">还没有账号?</div>
@@ -234,6 +234,48 @@
 						<div class="c582 cursor"  @click="type = 1">登录</div>
 					</div>
 				</div>
+				<div class="login-box" v-show="type == 6">
+					<div class="auth-title">找回密码</div>
+					<div class="login-input-row">
+						<input type="text" name="title" v-model="phoneEmail" required lay-verify="required" placeholder="手机号/邮箱" autocomplete="off" class="layui-input">
+					</div>
+					<div class="login-input-row">
+						<div class="verify-wrap3"></div>
+					</div>
+					<div class="login-input-row flex-between">
+						<input type="text" v-model="verificationCode2" name="title" required lay-verify="required" placeholder="验证码" autocomplete="off" class="layui-input">
+						<button type="button" class="layui-btn bg582" style="margin-left: 12px;" @click="getCode2" :disabled="phoneEmailMsg != '发送验证码'">{{phoneEmailMsg}}</button>
+					</div>
+					<div class="login-input-row">
+						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="phoneEmailCode">下一步</button>
+					</div>
+					<div class="get-password">
+						<div class="c582 cursor" @click="type = 4">邮箱注册</div>
+					</div>
+					<div class="flex-center">
+						<div class="c999">已有账号?</div>
+						<div class="c582 cursor" @click="type = 1">登录</div>
+					</div>
+				</div>
+				<div class="login-box" v-show="type == 7">
+					<div class="auth-title">找回密码</div>
+					<div class="login-input-row">
+						<input type="password" v-model="pass1" name="title" required lay-verify="required" placeholder="密码" autocomplete="off" class="layui-input">
+					</div>
+					<div class="login-input-row">
+						<input type="password" v-model="pass2" name="title" required lay-verify="required" placeholder="重复密码" autocomplete="off" class="layui-input">
+					</div>
+					<div class="login-input-row">
+						<button type="button" class="layui-btn layui-btn-fluid bg582" @click="setPass">完成</button>
+					</div>
+					<div class="get-password">
+						<div class="c582 cursor" @click="type = 4">邮箱注册</div>
+					</div>
+					<div class="flex-center">
+						<div class="c999">已有账号?</div>
+						<div class="c582 cursor"  @click="type = 1">登录</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<script type="text/javascript" src="./js/footer.js"></script>
@@ -278,14 +320,18 @@
 				verificationCode:'',
 				email:'',
 				verificationCode1:'',
+				phoneEmail:'',
+				verificationCode2:'',
 				key:'',
 				pass1:'',
 				pass2:'',
 				loginSu:false,
 				phoneSu:false,
 				emailSu:false,
+				phoneEmailSu:false,
 				phoneMsg:'发送验证码',
-				emailMsg:'发送验证码'
+				emailMsg:'发送验证码',
+				phoneEmailMsg:'发送验证码',
 			},
 			methods:{
 				login() {
@@ -309,8 +355,14 @@
 					})
 				},
 				emailCode() {
-					POST({email:this.email,verificationCode:this.verificationCode1},'i/pub/email_reg', res => {
+					POST({email:this.email,verificationCode:this.verificationCode1},'/pub/email_reg', res => {
 						
+					})
+				},
+				phoneEmailCode() {
+					POST({address:this.phoneEmail,verificationCode:this.verificationCode2},'/pub/reset_pwd_button', res => {
+						this.key = res.data
+						this.type = 7
 					})
 				},
 				
@@ -350,11 +402,33 @@
 						layer.msg('请先滑动验证')
 					}
 				},
+				getCode2() {
+					let _this = this;
+					if(this.phoneEmailSu){
+						POST({address:this.phoneEmail},'/pub/send_v_code', res => {
+							_this.phoneEmailMsg = 60
+							var time = setInterval(() => {
+								_this.phoneEmailMsg = _this.phoneEmailMsg - 1
+								console.log(_this.phoneEmailMsg)
+								if(_this.phoneEmailMsg == 0){
+									clearInterval(time)
+									_this.phoneEmailMsg = '发送验证码'
+								}
+							},1000)
+						})
+					}else{
+						layer.msg('请先滑动验证')
+					}
+				},
 				setPass() {
 					if(this.pass1 == this.pass2){
 						POST({passWord:this.pass2,key:this.key},`/pub/reset_pwd`, res => {
 							if(res.code == 200){
-								layer.msg('注册成功')
+								if(this.type == 7){
+									layer.msg('修改成功')
+								}else {
+									layer.msg('注册成功')
+								}
 								this.type = 1
 							}
 						})
@@ -365,7 +439,8 @@
 			},
 			watch:{
 				type() {
-					
+					this.pass1 = '';
+					this.pass2 = '';
 				}
 			},
 			created() {
@@ -399,6 +474,13 @@
 		 	slide_block_wrapper_width: "334px"
 		 },function(){
 			 vm.emailSu = true
+		 }); 
+		 var sliding_validation = SlidingValidation.create($('.verify-wrap3'),{
+		 	success_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/ok.png",
+		 	default_url_icon: "./plugins/Sliding_Validation_Gu/sliding_block_image/right-arrow.png",
+		 	slide_block_wrapper_width: "334px"
+		 },function(){
+		 			 vm.phoneEmailSu = true
 		 }); 
 		 
 		 $('.login-out').click(() => {

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>代理设置</title>
+		<link rel="stylesheet" type="text/css" href="plugins/layui-v2.5.6/layui/css/layui.css"/>
+		<link rel="stylesheet" type="text/css" href="./css/common.css" />
+		<link rel="stylesheet" type="text/css" href="./css/font_1465230_6hjw6lptphb/iconfont.css"/>
+		<style type="text/css">
+			.layui-input{
+				height: 40px;
+			}
+		</style>
+	</head>
+	<body>
+		<script type="text/javascript" src="./js/header.js"></script>
+		<div class="main-body1" v-cloak>
+			<div class="main-container">
+					<script type="text/javascript" src="./js/nav.js"></script>
+					<div class="normal-right">
+						<div class="flex-between">
+							<div class="page-title">代理设置</div>
+						</div>
+						<div class="module-title module-title1 layui-form">
+							<div class="layui-inline">
+								<label class="layui-form-label">用户名:</label>
+								<div class="layui-input-inline" style="width: 200px;">
+									<input type="text" autocomplete="off" class="layui-input" v-model="userName" @blur="userSearch">
+								</div>
+							</div>
+							<div class="layui-inline">
+								<label class="layui-form-label">代理商:</label>
+								<div class="layui-input-inline" style="width: 80px;">
+									<select name="city" style="width: 80px;" lay-filter="angent">
+									  <option value="1">是</option>
+									  <option value="0">否</option>
+									</select>
+								</div>
+							</div>
+							<div class="layui-inline">
+								<label class="layui-form-label" style="width: 100px;">折扣/返点:</label>
+								<div class="layui-input-inline" style="width: 220px;">
+									<select name="city" style="width: 220px;" lay-filter="dis" v-model="disId">
+									  <option v-for="item in userDiscount" :value="item.userDiscountId">折扣：{{item.userDiscountRate}}&nbsp;&nbsp;/&nbsp;&nbsp;返点：{{item.userDiscountRebate}}</option>
+									</select>
+								</div>
+							</div>
+							<div class="layui-inline" style="margin-left: 20px;">
+								<button type="button" class="layui-btn bg582" @click="add">设置</button>
+							</div>
+						</div>
+					</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="./js/jquery.min.js"></script>
+	<script src="js/jwt.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./plugins/layui-v2.5.6/layui/layui.js" type="text/javascript" charset="utf-8"></script>
+	<script src="./js/vue.min.js"></script>
+	<script src="js/http.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		var form;
+		var head = new Vue({
+			el:'.header-cont',
+			data:{
+				userName1:''
+			},
+			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							this.userName1 = res.data.userEmail
+						}else{
+							this.userName1 = res.data.userTel
+						}
+					})
+				}
+			},
+			created() {
+				this.getUser()
+			},
+			mounted() {
+				
+			}
+		})
+		var VM = new Vue({
+			el:'.main-body1',
+			data:{
+				nav:[
+					{icon:'iconfujian',name:'个人中心',link:'person.html',active:true},
+					{icon:'iconfujian',name:'我的订单',link:'order.html',active:false},
+					{icon:'iconfujian',name:'费用记录',link:'cost.html',active:false},
+					{icon:'iconfujian',name:'工单列表',link:'repair.html',active:false},
+					{icon:'iconfujian',name:'充值中心',link:'topUp.html',active:false},
+					{icon:'iconfujian',name:'订单维护',link:'orderMan.html',active:false},
+				],
+				userName:'',
+				isAngent:1,
+				disId:'',
+				type:{
+					'1':'下单',
+					'2':'充值电费',
+					'3':'服务费',
+					'4':'维护费',
+					'9':'账户充值'
+				},
+				userDiscount:[],
+				totalDiscount:[]
+			},
+			
+			methods:{
+				getUser(){
+					GET({},'/user/get_own_info', res => {
+						if(res.data.userEmail != ''){
+							$('.user-name').html(res.data.userEmail)
+						}else{
+							$('.user-name').html(res.data.userTel)
+						}
+					})
+				},
+				search() {
+					POST({},'/user_discount/list_all_discount',res => {
+						this.userDiscount = res.data
+						this.totalDiscount = res.data
+						console.log(this.totalDiscount)
+						this.disId = this.totalDiscount[0].userDiscountId
+						this.$nextTick(() => {
+							form.render()
+						})
+					})
+				},
+				userSearch() {
+					if(this.userName == ''){
+						return;
+					}
+					GET({userName:this.userName}, '/user/get_user_info', res => {
+						if(res.data != ''){
+							// this.totalDiscount.map(v => {
+							// 	if(v.userDiscountId == res.data.userDiscountId) 
+							// })
+							// this.userDiscount = result
+							this.disId = res.data.userDiscountId
+							this.$nextTick(() => {
+								form.render()
+							})
+						}
+					})
+				},
+				add() {
+					POST({isAgent:this.isAngent,userDiscountId:this.disId,userName:this.userName}, '/user/set_agent', res => {
+						console.log(res)
+						layer.msg(res.msg)
+					})
+				}
+			},
+			
+			created() {
+				let user
+				if(window.localStorage.getItem('Authorization')){
+					user = getUserjwt(window.localStorage.getItem('Authorization'))
+					this.nav = JSON.parse(user.menu)
+				}
+				this.getUser()
+				this.nav.map(v => {
+					if(v.name == document.title){
+						v.active = true
+					}else{
+						v.active = false
+					}
+				})
+				this.search();
+			},
+			
+			mounted() {
+				var _this = this;
+				layui.use(['laypage','layer','form'], function(){
+				  var laypage = layui.laypage;
+					layer = layui.layer;
+					form = layui.form
+				  
+				  laypage.render({
+				    elem: 'page' 
+				    ,count: 50 
+						,layout:['prev', 'page', 'next', 'limits', 'skip']
+						,jump: function(obj, first){
+						    //obj包含了当前分页的所有参数，比如：
+						    console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+						    console.log(obj.limit); //得到每页显示的条数
+						    
+						    //首次不执行
+						    if(!first){
+						      //do something
+						    }
+						  }
+				  });
+					
+					form.on('select(angent)', function(data){
+						_this.isAngent = data.value
+					});  
+					
+					form.on('select(dis)', function(data){
+					  _this.disId = data.value
+					});  
+				});
+			}
+		})
+		
+		$('.login-out').click(() => {
+			console.log(123)
+			let name = $('.head-user').text()
+			GET({
+				userName: name
+			}, '/pub/out', res => {
+				if (res.code == 200) {
+					window.localStorage.removeItem('Authorization')
+					window.location.href = 'index.html'
+				}
+			})
+		})
+	</script>
+</html>
